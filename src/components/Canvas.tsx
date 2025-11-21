@@ -46,11 +46,22 @@ export default function Canvas() {
     copySelectedBlocks,
     pasteSelectedBlocks,
     cutSelectedBlocks,
+    
+    // 🆕 드래그 선택 박스
+    selectionBox,
+    setSelectionBox,
+    isSelecting,
+    setIsSelecting,
+    selectBlocksInBox,
   } = useBuilderStore();
   
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [draggingBlockType, setDraggingBlockType] = useState<BlockType | null>(null);
   const dropZoneRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  
+  // 🆕 선택 박스 드래그 상태
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const isDraggingSelection = useRef(false);
 
   // 🆕 다중 블록 선택 키보드 단축키
   useEffect(() => {
@@ -324,6 +335,106 @@ export default function Canvas() {
     }
   };
 
+  // 🆕 드래그 선택 박스 시작
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (previewMode) return;
+    
+    // 빈 공간에서만 선택 박스 시작 (블록이나 드롭존이 아닌 곳)
+    const target = e.target as HTMLElement;
+    const isCanvas = target.classList.contains('viewport-canvas') || 
+                     target.closest('.viewport-canvas')?.contains(target);
+    const isBlock = target.closest('[data-block-id]');
+    const isDropZone = target.classList.contains('drag-placeholder-active') ||
+                       target.classList.contains('drag-placeholder-inactive');
+    
+    if (!isCanvas || isBlock || isDropZone) return;
+    
+    // 🆕 텍스트 선택 방지 - preventDefault 추가
+    e.preventDefault();
+    
+    // 캔버스 기준 좌표 계산
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const startX = e.clientX - rect.left + canvas.scrollLeft;
+    const startY = e.clientY - rect.top + canvas.scrollTop;
+    
+    isDraggingSelection.current = true;
+    setIsSelecting(true);
+    setSelectionBox({
+      startX,
+      startY,
+      endX: startX,
+      endY: startY,
+    });
+  };
+
+  // 🆕 드래그 선택 박스 업데이트
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingSelection.current || !selectionBox || previewMode) return;
+    
+    // 🆕 텍스트 선택 방지
+    e.preventDefault();
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const endX = e.clientX - rect.left + canvas.scrollLeft;
+    const endY = e.clientY - rect.top + canvas.scrollTop;
+    
+    setSelectionBox({
+      ...selectionBox,
+      endX,
+      endY,
+    });
+  };
+
+  // 🆕 드래그 선택 박스 종료
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDraggingSelection.current || !selectionBox || previewMode) return;
+    
+    isDraggingSelection.current = false;
+    setIsSelecting(false);
+    
+    // Ctrl 키 확인 (기존 선택에 추가)
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+    const mode = ctrlOrCmd ? 'add' : 'replace';
+    
+    // 선택 박스 내 블록들 선택
+    selectBlocksInBox(selectionBox, mode);
+    
+    // 선택 박스 초기화
+    setSelectionBox(null);
+  };
+
+  // 🆕 선택 박스 렌더링 헬퍼
+  const renderSelectionBox = () => {
+    if (!selectionBox || !isSelecting) return null;
+    
+    const left = Math.min(selectionBox.startX, selectionBox.endX);
+    const top = Math.min(selectionBox.startY, selectionBox.endY);
+    const width = Math.abs(selectionBox.endX - selectionBox.startX);
+    const height = Math.abs(selectionBox.endY - selectionBox.startY);
+    
+    return (
+      <div
+        className="absolute pointer-events-none z-50"
+        style={{
+          left: `${left}px`,
+          top: `${top}px`,
+          width: `${width}px`,
+          height: `${height}px`,
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          border: '2px solid rgb(59, 130, 246)',
+          borderRadius: '4px',
+        }}
+      />
+    );
+  };
+
   if (!currentPage) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -333,17 +444,28 @@ export default function Canvas() {
   }
 
   return (
-    <div className="w-full h-full p-8" onClick={!previewMode ? handleCanvasClick : undefined}>
+    <div 
+      className="w-full h-full p-8" 
+      onClick={!previewMode ? handleCanvasClick : undefined}
+    >
       <div
-        className={`viewport-canvas bg-white rounded-lg shadow-lg overflow-hidden ${viewport}`}
+        ref={canvasRef}
+        className={`viewport-canvas bg-white rounded-lg shadow-lg overflow-hidden relative ${viewport} ${isSelecting ? 'selecting' : ''}`}
         onDragOver={handleCanvasDragOver}
         onDrop={handleCanvasDrop}
+        onMouseDown={!previewMode ? handleMouseDown : undefined}
+        onMouseMove={!previewMode ? handleMouseMove : undefined}
+        onMouseUp={!previewMode ? handleMouseUp : undefined}
+        style={{ cursor: isDraggingSelection.current ? 'crosshair' : 'default' }}
       >
+        {/* 🆕 드래그 선택 박스 */}
+        {renderSelectionBox()}
+        
         <div className="min-h-screen">
           {currentPage.blocks.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-96 border-2 border-dashed border-gray-300 m-8 rounded-lg">
               <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 1 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
               <p className="text-gray-400 text-lg font-medium mb-2">블록을 드래그하여 시작하세요</p>
               <p className="text-gray-400 text-sm">좌측에서 블록을 선택하고 여기로 드래그하세요</p>

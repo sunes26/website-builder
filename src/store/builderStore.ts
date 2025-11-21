@@ -9,7 +9,8 @@ import type {
   MindMapNode, 
   MindMapEdge,
   SelectedElement,
-  SelectionMode  
+  SelectionMode,
+  SelectionBox
 } from '@/types';
 
 interface BuilderState {
@@ -23,6 +24,10 @@ interface BuilderState {
   // 🆕 다중 블록 선택
   selectedBlockIds: string[];
   selectionMode: SelectionMode;
+  
+  // 🆕 드래그 선택 박스
+  selectionBox: SelectionBox | null;
+  isSelecting: boolean;
   
   // 레거시 호환성 (SettingsPanel용)
   selectedBlockId: string | null;
@@ -58,6 +63,11 @@ interface BuilderState {
   clearSelection: () => void;
   selectAll: () => void;
   isBlockSelected: (blockId: string) => boolean;
+  
+  // 🆕 드래그 선택 박스
+  setSelectionBox: (box: SelectionBox | null) => void;
+  setIsSelecting: (isSelecting: boolean) => void;
+  selectBlocksInBox: (box: SelectionBox, mode: 'replace' | 'add') => void;
   
   // 블록 액션
   addBlock: (block: Block, index?: number) => void;
@@ -152,6 +162,8 @@ export const useBuilderStore = create<BuilderState>((set, get) => {
     selectedBlockId: null,  // 레거시
     selectedBlockIds: [],  // 🆕
     selectionMode: 'single',  // 🆕
+    selectionBox: null,  // 🆕
+    isSelecting: false,  // 🆕
     activeTab: 'editor',
     viewport: 'desktop',
     previewMode: false,
@@ -300,6 +312,76 @@ export const useBuilderStore = create<BuilderState>((set, get) => {
     isBlockSelected: (blockId) => {
       const { selectedBlockIds } = get();
       return selectedBlockIds.includes(blockId);
+    },
+
+    // 🆕 드래그 선택 박스
+    setSelectionBox: (box) => {
+      set({ selectionBox: box });
+    },
+
+    setIsSelecting: (isSelecting) => {
+      set({ isSelecting });
+    },
+
+    selectBlocksInBox: (box, mode) => {
+      const { currentPage } = get();
+      if (!currentPage) return;
+
+      // 캔버스 스크롤 위치 고려
+      const canvas = document.querySelector('.viewport-canvas');
+      if (!canvas) return;
+
+      const canvasRect = canvas.getBoundingClientRect();
+
+      // 박스 내에 있는 블록들 찾기
+      const blocksInBox: string[] = [];
+      
+      currentPage.blocks.forEach(block => {
+        const blockElement = document.querySelector(`[data-block-id="${block.id}"]`);
+        if (!blockElement) return;
+
+        const blockRect = blockElement.getBoundingClientRect();
+        
+        // 블록과 선택 박스의 겹침 감지
+        const blockLeft = blockRect.left - canvasRect.left;
+        const blockRight = blockRect.right - canvasRect.left;
+        const blockTop = blockRect.top - canvasRect.top;
+        const blockBottom = blockRect.bottom - canvasRect.top;
+
+        const boxLeft = Math.min(box.startX, box.endX);
+        const boxRight = Math.max(box.startX, box.endX);
+        const boxTop = Math.min(box.startY, box.endY);
+        const boxBottom = Math.max(box.startY, box.endY);
+
+        // AABB 충돌 감지
+        const isOverlapping = !(
+          blockRight < boxLeft ||
+          blockLeft > boxRight ||
+          blockBottom < boxTop ||
+          blockTop > boxBottom
+        );
+
+        if (isOverlapping) {
+          blocksInBox.push(block.id);
+        }
+      });
+
+      // 선택 모드에 따라 처리
+      if (mode === 'replace') {
+        set({
+          selectedBlockIds: blocksInBox,
+          selectionMode: blocksInBox.length > 1 ? 'multiple' : 'single',
+          selectedElement: null,
+        });
+      } else if (mode === 'add') {
+        const { selectedBlockIds } = get();
+        const newSelection = [...new Set([...selectedBlockIds, ...blocksInBox])];
+        set({
+          selectedBlockIds: newSelection,
+          selectionMode: newSelection.length > 1 ? 'multiple' : 'single',
+          selectedElement: null,
+        });
+      }
     },
 
     // 블록 추가
@@ -459,7 +541,6 @@ export const useBuilderStore = create<BuilderState>((set, get) => {
       const { copiedBlock, currentPage, addBlock, syncButtonActionToEdge } = get();
       if (!copiedBlock || !currentPage) return;
 
-      // ... (기존 로직 유지)
       const collectAllLabels = (): string[] => {
         const labels: string[] = [];
         

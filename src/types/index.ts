@@ -24,7 +24,7 @@ export interface SelectedElement {
 // 🆕 다중 선택 모드
 export type SelectionMode = 'single' | 'multiple';
 
-// 🆕 선택 영역 정의 (드래그 선택 박스)
+// 🆕 선택 영역 정의 (드래그 선택 박스) ✅ 이미 정의됨
 export interface SelectionBox {
   startX: number;
   startY: number;

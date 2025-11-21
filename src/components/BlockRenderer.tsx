@@ -49,6 +49,7 @@ export default function BlockRenderer({
 
   return (
     <div
+      data-block-id={block.id}  // ⭐ 이게 빠져있었습니다!
       className={`editable-block transition-all relative ${
         isSelected 
           ? 'ring-2 ring-blue-500 bg-blue-50' 

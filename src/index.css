@@ -137,6 +137,35 @@
   }
 
   /* ========================================
+     🆕 드래그 선택 박스 - 텍스트 선택 방지
+     ======================================== */
+  
+  /* 드래그 선택 중일 때 텍스트 선택 방지 */
+  .viewport-canvas.selecting {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  /* 드래그 선택 중일 때 모든 자식 요소도 선택 방지 */
+  .viewport-canvas.selecting * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  /* 편집 모드에서는 input, textarea는 선택 가능하게 유지 */
+  .viewport-canvas.selecting input,
+  .viewport-canvas.selecting textarea {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+  }
+
+  /* ========================================
      기타 UI 요소
      ======================================== */
   
