@@ -335,24 +335,26 @@ export default function Canvas() {
     }
   };
 
-  // 🆕 드래그 선택 박스 시작
+  // ✅ 수정: inactive 드롭존은 허용, active만 차단
   const handleMouseDown = (e: React.MouseEvent) => {
     if (previewMode) return;
     
-    // 빈 공간에서만 선택 박스 시작 (블록이나 드롭존이 아닌 곳)
     const target = e.target as HTMLElement;
-    const isCanvas = target.classList.contains('viewport-canvas') || 
-                     target.closest('.viewport-canvas')?.contains(target);
+    
+    // 블록 위에서는 드래그 선택 시작 안 함
     const isBlock = target.closest('[data-block-id]');
-    const isDropZone = target.classList.contains('drag-placeholder-active') ||
-                       target.classList.contains('drag-placeholder-inactive');
     
-    if (!isCanvas || isBlock || isDropZone) return;
+    // ⭐ 수정: active 드롭존만 차단 (inactive는 허용)
+    const isActiveDropZone = target.classList.contains('drag-placeholder-active');
     
-    // 🆕 텍스트 선택 방지 - preventDefault 추가
+    if (isBlock || isActiveDropZone) {
+      return;
+    }
+    
+    // 🆕 텍스트 선택 방지
     e.preventDefault();
     
-    // 캔버스 기준 좌표 계산
+    // 캔버스 요소 확인
     const canvas = canvasRef.current;
     if (!canvas) return;
     
@@ -450,7 +452,7 @@ export default function Canvas() {
     >
       <div
         ref={canvasRef}
-        className={`viewport-canvas bg-white rounded-lg shadow-lg overflow-hidden relative ${viewport} ${isSelecting ? 'selecting' : ''}`}
+        className={`viewport-canvas bg-white rounded-lg shadow-lg overflow-auto relative ${viewport} ${isSelecting ? 'selecting' : ''}`}
         onDragOver={handleCanvasDragOver}
         onDrop={handleCanvasDrop}
         onMouseDown={!previewMode ? handleMouseDown : undefined}

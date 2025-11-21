@@ -323,6 +323,7 @@ export const useBuilderStore = create<BuilderState>((set, get) => {
       set({ isSelecting });
     },
 
+    // ✅ 수정된 selectBlocksInBox 함수
     selectBlocksInBox: (box, mode) => {
       const { currentPage } = get();
       if (!currentPage) return;
@@ -342,11 +343,11 @@ export const useBuilderStore = create<BuilderState>((set, get) => {
 
         const blockRect = blockElement.getBoundingClientRect();
         
-        // 블록과 선택 박스의 겹침 감지
-        const blockLeft = blockRect.left - canvasRect.left;
-        const blockRight = blockRect.right - canvasRect.left;
-        const blockTop = blockRect.top - canvasRect.top;
-        const blockBottom = blockRect.bottom - canvasRect.top;
+        // ⭐ 블록 위치를 캔버스 내부 좌표로 변환 (스크롤 포함)
+        const blockLeft = blockRect.left - canvasRect.left + canvas.scrollLeft;
+        const blockRight = blockRect.right - canvasRect.left + canvas.scrollLeft;
+        const blockTop = blockRect.top - canvasRect.top + canvas.scrollTop;
+        const blockBottom = blockRect.bottom - canvasRect.top + canvas.scrollTop;
 
         const boxLeft = Math.min(box.startX, box.endX);
         const boxRight = Math.max(box.startX, box.endX);
