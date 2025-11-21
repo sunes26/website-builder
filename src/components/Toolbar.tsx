@@ -10,7 +10,7 @@ export default function Toolbar() {
     setViewport, 
     previewMode, 
     togglePreviewMode,
-    selectedElement,  // 🔥 수정: selectedBlockId → selectedElement
+    selectedElement,
     copyBlock,
     pasteBlock,
     cutBlock,
@@ -18,19 +18,44 @@ export default function Toolbar() {
     redo,
     canUndo,
     canRedo,
+    
+    // 🆕 다중 선택 관련
+    selectedBlockIds,
+    selectionMode,
+    copySelectedBlocks,
+    pasteSelectedBlocks,
+    cutSelectedBlocks,
   } = useBuilderStore();
 
+  // 🆕 복사 핸들러 (단일/다중 자동 선택)
   const handleCopy = () => {
-    if (selectedElement) {  // 🔥 수정
-      copyBlock(selectedElement.blockId);  // 🔥 수정
+    if (selectionMode === 'multiple' && selectedBlockIds.length > 1) {
+      copySelectedBlocks();
+    } else if (selectedElement) {
+      copyBlock(selectedElement.blockId);
     }
   };
 
+  // 🆕 잘라내기 핸들러 (단일/다중 자동 선택)
   const handleCut = () => {
-    if (selectedElement) {  // 🔥 수정
-      cutBlock(selectedElement.blockId);  // 🔥 수정
+    if (selectionMode === 'multiple' && selectedBlockIds.length > 1) {
+      cutSelectedBlocks();
+    } else if (selectedElement) {
+      cutBlock(selectedElement.blockId);
     }
   };
+
+  // 🆕 붙여넣기 핸들러 (단일/다중 자동 선택)
+  const handlePaste = () => {
+    if (selectionMode === 'multiple') {
+      pasteSelectedBlocks();
+    } else {
+      pasteBlock();
+    }
+  };
+
+  // 🆕 선택 가능 여부 (요소 선택 또는 다중 블록 선택)
+  const hasSelection = selectedElement !== null || selectedBlockIds.length > 0;
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -59,24 +84,31 @@ export default function Toolbar() {
           </button>
         </div>
 
-        {/* 중앙: 복사/붙여넣기/잘라내기 + Undo/Redo */}
+        {/* 중앙: 복사/붙여넣기/잘라내기 + Undo/Redo + 선택 개수 배지 🆕 */}
         {activeTab === 'editor' && !previewMode && (
           <div className="flex items-center gap-1">
+            {/* 🆕 선택 개수 배지 */}
+            {selectedBlockIds.length > 1 && (
+              <div className="mr-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                {selectedBlockIds.length}개 선택됨
+              </div>
+            )}
+
             {/* 복사/붙여넣기/잘라내기 */}
             <button
               onClick={handleCopy}
-              disabled={!selectedElement}  // 🔥 수정
+              disabled={!hasSelection}
               className={`p-2 rounded-lg transition-colors ${
-                selectedElement  // 🔥 수정
+                hasSelection
                   ? 'text-gray-700 hover:bg-white hover:shadow-sm' 
                   : 'text-gray-300 cursor-not-allowed'
               }`}
-              title="복사 (Ctrl+C)"
+              title={`복사 (Ctrl+C)${selectedBlockIds.length > 1 ? ` - ${selectedBlockIds.length}개` : ''}`}
             >
               <Copy className="w-5 h-5" />
             </button>
             <button
-              onClick={pasteBlock}
+              onClick={handlePaste}
               className="p-2 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-colors"
               title="붙여넣기 (Ctrl+V)"
             >
@@ -84,13 +116,13 @@ export default function Toolbar() {
             </button>
             <button
               onClick={handleCut}
-              disabled={!selectedElement}  // 🔥 수정
+              disabled={!hasSelection}
               className={`p-2 rounded-lg transition-colors ${
-                selectedElement  // 🔥 수정
+                hasSelection
                   ? 'text-gray-700 hover:bg-white hover:shadow-sm' 
                   : 'text-gray-300 cursor-not-allowed'
               }`}
-              title="잘라내기 (Ctrl+X)"
+              title={`잘라내기 (Ctrl+X)${selectedBlockIds.length > 1 ? ` - ${selectedBlockIds.length}개` : ''}`}
             >
               <Scissors className="w-5 h-5" />
             </button>

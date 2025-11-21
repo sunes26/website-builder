@@ -291,18 +291,13 @@ export default function Canvas() {
     return BLOCK_HEIGHTS[draggingBlockType] || 120;
   };
 
-  // 🆕 요소 클릭 핸들러 (기존 - 텍스트/이미지/버튼 등)
+  // 🆕 요소 클릭 핸들러 (텍스트/이미지/버튼 등)
   const handleElementClick = (element: SelectedElement) => {
     setSelectedElement(element);
   };
 
   // 🆕 블록 클릭 핸들러 (다중 선택)
   const handleBlockClick = (e: React.MouseEvent, blockId: string) => {
-    // 이벤트 버블링 방지 (자식 요소 클릭 시)
-    if (e.target !== e.currentTarget && (e.target as HTMLElement).closest('.editable-block') !== e.currentTarget) {
-      return;
-    }
-
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
     const shift = e.shiftKey;
@@ -321,6 +316,14 @@ export default function Canvas() {
     }
   };
 
+  // 🆕 캔버스 배경 클릭 (선택 해제)
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    // 캔버스 자체를 클릭한 경우에만 선택 해제
+    if (e.target === e.currentTarget) {
+      clearSelection();
+    }
+  };
+
   if (!currentPage) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -330,7 +333,7 @@ export default function Canvas() {
   }
 
   return (
-    <div className="w-full h-full p-8">
+    <div className="w-full h-full p-8" onClick={!previewMode ? handleCanvasClick : undefined}>
       <div
         className={`viewport-canvas bg-white rounded-lg shadow-lg overflow-hidden ${viewport}`}
         onDragOver={handleCanvasDragOver}
@@ -377,26 +380,33 @@ export default function Canvas() {
 
               {currentPage.blocks.map((block, index) => (
                 <div key={block.id}>
-                  {/* 🆕 블록 래퍼에 클릭 이벤트 추가 */}
+                  {/* 🆕 클릭 가능한 wrapper로 Ctrl+클릭, Shift+클릭 처리 */}
                   <div
-                    onClick={previewMode ? undefined : (e) => {
-                      // 빈 공간 클릭 시에만 블록 선택
-                      if (e.target === e.currentTarget) {
+                    className="block-wrapper"
+                    onClickCapture={!previewMode ? (e) => {
+                      // Ctrl 또는 Shift 키가 눌렸으면 블록 선택 모드
+                      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+                      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+                      const shift = e.shiftKey;
+                      
+                      if (ctrlOrCmd || shift) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         handleBlockClick(e, block.id);
                       }
-                    }}
+                    } : undefined}
                   >
                     <BlockRenderer 
                       block={block} 
-                      isSelected={!previewMode && isBlockSelected(block.id)}  // 🆕 선택 여부 전달
+                      isSelected={!previewMode && isBlockSelected(block.id)}
                       onClick={previewMode ? undefined : (element) => {
                         // 요소 클릭 시 (텍스트, 이미지, 버튼 등)
                         handleElementClick(element);
                       }}
                       onBlockClick={previewMode ? undefined : (e) => {
-                        // 블록 자체 클릭 시
+                        // 블록 자체 클릭 시 (빈 공간 클릭)
                         handleBlockClick(e, block.id);
-                      }}  // 🆕 블록 클릭 핸들러 전달
+                      }}
                     />
                   </div>
                   

@@ -1,5 +1,5 @@
 // src/components/PropertiesPanel/index.tsx
-import { Settings, Trash2, Type, Box, Image, MousePointer } from 'lucide-react';
+import { Settings, Trash2, Type, Box, Image, MousePointer, Layers } from 'lucide-react';
 import { useBuilderStore } from '@/store/builderStore';
 import HeaderForm from './HeaderForm';
 import HeroForm from './HeroForm';
@@ -15,8 +15,106 @@ import ButtonElementForm from './ButtonElementForm';
 import LinkElementForm from './LinkElementForm';
 
 export default function PropertiesPanel() {
-  const { currentPage, selectedElement, removeBlock } = useBuilderStore();
+  const { 
+    currentPage, 
+    selectedElement, 
+    removeBlock,
+    // 🆕 다중 선택 관련
+    selectedBlockIds,
+    selectionMode,
+    deleteSelectedBlocks,
+    clearSelection,
+  } = useBuilderStore();
 
+  // 🆕 다중 선택 모드 패널
+  if (selectionMode === 'multiple' && selectedBlockIds.length > 1) {
+    const selectedBlocks = currentPage?.blocks.filter(b => selectedBlockIds.includes(b.id)) || [];
+    
+    return (
+      <div className="h-full flex flex-col bg-white">
+        <div className="p-4 border-b border-gray-200 bg-blue-50 flex-shrink-0">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-blue-600" />
+              <h2 className="text-sm font-bold text-blue-800 uppercase tracking-wide">
+                다중 선택
+              </h2>
+            </div>
+            <button
+              onClick={clearSelection}
+              className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+            >
+              선택 해제
+            </button>
+          </div>
+          
+          <div className="text-sm text-blue-700 font-semibold">
+            {selectedBlockIds.length}개 블록 선택됨
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4">
+          {/* 선택된 블록 목록 */}
+          <div className="mb-6">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              선택된 블록
+            </h3>
+            <div className="space-y-2">
+              {selectedBlocks.map((block) => (
+                <div
+                  key={block.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {block.type}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    ID: {block.id.slice(0, 8)}...
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 일괄 작업 버튼 */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              일괄 작업
+            </h3>
+            
+            <button
+              onClick={deleteSelectedBlocks}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 
+                         bg-red-50 text-red-700 rounded-lg font-medium text-sm
+                         hover:bg-red-100 transition-colors border border-red-200"
+            >
+              <Trash2 className="w-4 h-4" />
+              모두 삭제
+            </button>
+
+            {/* 안내 문구 */}
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                💡 단축키 안내
+              </h4>
+              <ul className="text-xs text-blue-700 space-y-1">
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Ctrl+C</kbd> 복사</li>
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Ctrl+V</kbd> 붙여넣기</li>
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Ctrl+X</kbd> 잘라내기</li>
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Delete</kbd> 삭제</li>
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Escape</kbd> 선택 해제</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 기존 단일 선택 로직
   if (!selectedElement) {
     return (
       <div className="h-full flex flex-col">
@@ -37,6 +135,18 @@ export default function PropertiesPanel() {
               캔버스에서 텍스트, 이미지, 버튼 등을<br />
               클릭하면 속성을 편집할 수 있습니다.
             </p>
+            
+            {/* 🆕 다중 선택 안내 */}
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200 text-left">
+              <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                💡 다중 선택 사용법
+              </h4>
+              <ul className="text-xs text-blue-700 space-y-1">
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Ctrl+클릭</kbd> 여러 블록 선택</li>
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Shift+클릭</kbd> 범위 선택</li>
+                <li>• <kbd className="px-1.5 py-0.5 bg-white rounded text-xs">Ctrl+A</kbd> 전체 선택</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -113,7 +223,6 @@ export default function PropertiesPanel() {
         return <ButtonElementForm key={selectedElement.blockId} block={selectedBlock} elementPath={selectedElement.elementPath} />;
       
       case 'link':
-        // 🆕 헤더, 푸터, 콘텐츠, 링크 그룹 블록의 링크 모두 지원
         if (
           selectedBlock.type === '헤더' || 
           selectedBlock.type === '푸터' || 
