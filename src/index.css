@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100 font-sans;
+  }
+
+  /* 레이아웃 기본 설정 */
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* ========================================
+     레이아웃 시스템
+     ======================================== */
+  
+  /* 루트 레이아웃 컨테이너 */
+  .layout-root {
+    @apply w-full h-screen flex flex-col overflow-hidden bg-gray-50;
+  }
+
+  /* 상단 툴바 */
+  .layout-toolbar {
+    @apply w-full h-[60px] bg-white border-b border-gray-200 flex-shrink-0 shadow-sm z-50;
+  }
+
+  /* 메인 컨텐츠 영역 (사이드바 + 캔버스 + 속성패널) */
+  .layout-content {
+    @apply flex-1 flex overflow-hidden;
+  }
+
+  /* 좌측 사이드바 */
+  .layout-sidebar {
+    @apply w-[200px] h-full bg-white border-r border-gray-200 flex-shrink-0 
+           overflow-y-auto overflow-x-hidden shadow-sm;
+  }
+
+  /* 중앙 캔버스 */
+  .layout-canvas {
+    @apply flex-1 h-full bg-gray-100 overflow-y-auto overflow-x-hidden;
+  }
+
+  /* 우측 속성 패널 */
+  .layout-properties {
+    @apply w-[300px] h-full bg-white border-l border-gray-200 flex-shrink-0 
+           overflow-y-auto overflow-x-hidden shadow-sm;
+  }
+
+  /* 🆕 미리보기 네비게이션 바 */
+  .preview-navbar {
+    @apply w-full h-[60px] bg-white border-b-2 border-gray-300 flex-shrink-0 shadow-md z-50;
+  }
+
+  /* ========================================
+     드래그 앤 드롭 시스템 (깜빡임 방지)
+     ======================================== */
+  
+  /* 드롭 영역 - 비활성 상태 */
+  .drag-placeholder-inactive {
+    /* 최소 높이 50px로 판정 영역 확보 */
+    @apply min-h-[50px] transition-all duration-200;
+    /* 8px에서 50px로 증가 → 6배 더 넓은 판정 영역! */
+  }
+
+  /* 드롭 영역 - 활성 상태 (드래그 오버 시) */
+  .drag-placeholder-active {
+    @apply transition-all duration-300 my-4;
+    /* min-height는 inline style로 동적 설정됨 (블록 타입별) */
+  }
+
+  /* 드롭 플레이스홀더 내용 (블록 타입별 높이 적용) */
+  .drag-placeholder-content {
+    @apply h-full w-full bg-blue-50 border-3 border-dashed border-blue-400 rounded-lg
+           flex items-center justify-center text-blue-600 font-medium
+           animate-pulse shadow-sm relative;
+    /* pointer-events-none 추가로 자식 요소로의 마우스 이벤트 무시 */
+  }
+
+  /* 플레이스홀더 내부 그라데이션 효과 */
+  .drag-placeholder-content::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-b from-blue-100/30 to-transparent rounded-lg pointer-events-none;
+  }
+
+  /* 기존 드래그 플레이스홀더 (하위 호환성) */
+  .drag-placeholder {
+    @apply min-h-[100px] bg-blue-50 border-2 border-dashed border-blue-600 
+           flex items-center justify-center text-blue-600 text-sm my-4 rounded-lg;
+  }
+
+  /* ========================================
+     블록 스타일
+     ======================================== */
+  
+  .editable-block {
+    @apply transition-all duration-200 border-2 border-transparent relative;
+  }
+
+  .editable-block:hover {
+    @apply shadow-[0_0_0_2px_#3b82f6] cursor-pointer;
+  }
+
+  .editable-block.selected {
+    @apply border-blue-600 shadow-[0_0_0_3px_rgba(59,130,246,0.3)];
+  }
+
+  /* 블록 드래그 중 스타일 */
+  .editable-block.dragging {
+    @apply opacity-50 cursor-grabbing;
+  }
+
+  /* ========================================
+     뷰포트 설정
+     ======================================== */
+
+  .viewport-canvas {
+    @apply transition-all duration-300 w-full mx-auto shadow-xl;
+  }
+
+  .viewport-canvas.tablet {
+    @apply max-w-[768px];
+  }
+
+  .viewport-canvas.mobile {
+    @apply max-w-[375px];
+  }
+
+  /* ========================================
+     기타 UI 요소
+     ======================================== */
+  
+  .tab-active {
+    @apply border-b-2 border-blue-600 text-blue-600 font-semibold;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
