@@ -1,10 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
 import { useBuilderStore } from '../store/builderStore';
 import { getSVGPoint } from '../utils/shapeUtils';
+import type { CanvasElement } from '../types';
 
 interface UseDragElementReturn {
   isDragging: boolean;
-  draggedElementId: string | null;
   handleDragStart: (e: React.MouseEvent, elementId: string) => void;
   handleDrag: (e: React.MouseEvent<SVGSVGElement>) => void;
   handleDragEnd: () => void;
@@ -14,10 +14,10 @@ export function useDragElement(): UseDragElementReturn {
   const { elements, updateElement, selectedElementIds, selectElements } = useBuilderStore();
   
   const [isDragging, setIsDragging] = useState(false);
-  const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
+  const [_draggedElementId, setDraggedElementId] = useState<string | null>(null);
   
   const dragStartPointRef = useRef<{ x: number; y: number } | null>(null);
-  const elementStartPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const elementStartDataRef = useRef<Map<string, any>>(new Map());
 
   /**
    * 드래그 시작
@@ -42,15 +42,26 @@ export function useDragElement(): UseDragElementReturn {
         selectElements([elementId], 'replace');
       }
       
-      // 선택된 모든 요소의 시작 위치 저장
-      const startPositions = new Map<string, { x: number; y: number }>();
+      // 선택된 모든 요소의 시작 데이터 저장
+      const startData = new Map<string, any>();
       selectedElementIds.forEach((id) => {
         const el = elements.find((e) => e.id === id);
         if (el && !el.locked) {
-          startPositions.set(id, { ...el.position });
+          if (el.type === 'line' || el.type === 'arrow') {
+            // 선/화살표: startPoint, endPoint 저장
+            startData.set(id, {
+              startPoint: { ...el.startPoint },
+              endPoint: { ...el.endPoint },
+            });
+          } else {
+            // 도형/텍스트/이미지: position 저장
+            startData.set(id, {
+              position: { ...el.position },
+            });
+          }
         }
       });
-      elementStartPositionsRef.current = startPositions;
+      elementStartDataRef.current = startData;
       
       setIsDragging(true);
       setDraggedElementId(elementId);
@@ -72,16 +83,37 @@ export function useDragElement(): UseDragElementReturn {
       const deltaY = currentPoint.y - dragStartPointRef.current.y;
       
       // 선택된 모든 요소 이동
-      elementStartPositionsRef.current.forEach((startPos, elementId) => {
-        const newPosition = {
-          x: startPos.x + deltaX,
-          y: startPos.y + deltaY,
-        };
-        
-        updateElement(elementId, { position: newPosition });
+      elementStartDataRef.current.forEach((startData, elementId) => {
+        const element = elements.find((el) => el.id === elementId);
+        if (!element) return;
+
+        if (element.type === 'line' || element.type === 'arrow') {
+          // 선/화살표: startPoint와 endPoint 모두 이동
+          const newStartPoint = {
+            x: startData.startPoint.x + deltaX,
+            y: startData.startPoint.y + deltaY,
+          };
+          const newEndPoint = {
+            x: startData.endPoint.x + deltaX,
+            y: startData.endPoint.y + deltaY,
+          };
+          
+          updateElement(elementId, {
+            startPoint: newStartPoint,
+            endPoint: newEndPoint,
+          } as Partial<CanvasElement>);
+        } else {
+          // 도형/텍스트/이미지: position 이동
+          const newPosition = {
+            x: startData.position.x + deltaX,
+            y: startData.position.y + deltaY,
+          };
+          
+          updateElement(elementId, { position: newPosition });
+        }
       });
     },
-    [isDragging, updateElement]
+    [isDragging, elements, updateElement]
   );
 
   /**
@@ -91,12 +123,11 @@ export function useDragElement(): UseDragElementReturn {
     setIsDragging(false);
     setDraggedElementId(null);
     dragStartPointRef.current = null;
-    elementStartPositionsRef.current.clear();
+    elementStartDataRef.current.clear();
   }, []);
 
   return {
     isDragging,
-    draggedElementId,
     handleDragStart,
     handleDrag,
     handleDragEnd,

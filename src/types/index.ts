@@ -104,6 +104,7 @@ export interface LineElement extends BaseElement {
   endPoint: Position;
   strokeColor: string;
   strokeWidth: number;
+  opacity: number;
 }
 
 /**
@@ -116,6 +117,7 @@ export interface ArrowElement extends BaseElement {
   strokeColor: string;
   strokeWidth: number;
   arrowHeadSize: number;
+  opacity: number;
 }
 
 /**

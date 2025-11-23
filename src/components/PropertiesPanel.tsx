@@ -30,25 +30,72 @@ export default function PropertiesPanel() {
         </p>
       </div>
 
-      {/* Phase 7에서 속성 폼이 여기에 추가됩니다 */}
+      {/* 속성 표시 */}
       <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center">
         <p className="text-sm text-gray-500 mb-2">
           속성 편집 패널
         </p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 mb-4">
           Phase 7에서 구현될 예정입니다
         </p>
+        
         <div className="mt-4 space-y-2 text-left">
           <div className="text-xs text-gray-600">
             <span className="font-medium">타입:</span>{' '}
             <span className="text-gray-500">{element.type}</span>
           </div>
-          <div className="text-xs text-gray-600">
-            <span className="font-medium">위치:</span>{' '}
-            <span className="text-gray-500">
-              X: {element.position.x}, Y: {element.position.y}
-            </span>
-          </div>
+          
+          {/* 도형/텍스트/이미지 속성 */}
+          {(element.type === 'shape' || element.type === 'text' || element.type === 'image') && (
+            <>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">위치:</span>{' '}
+                <span className="text-gray-500">
+                  X: {Math.round(element.position.x)}, Y: {Math.round(element.position.y)}
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">크기:</span>{' '}
+                <span className="text-gray-500">
+                  W: {Math.round(element.size.width)}, H: {Math.round(element.size.height)}
+                </span>
+              </div>
+            </>
+          )}
+          
+          {/* 선/화살표 속성 */}
+          {(element.type === 'line' || element.type === 'arrow') && (
+            <>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">시작점:</span>{' '}
+                <span className="text-gray-500">
+                  X: {Math.round(element.startPoint.x)}, Y: {Math.round(element.startPoint.y)}
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">끝점:</span>{' '}
+                <span className="text-gray-500">
+                  X: {Math.round(element.endPoint.x)}, Y: {Math.round(element.endPoint.y)}
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">색상:</span>{' '}
+                <span className="text-gray-500">{element.strokeColor}</span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">두께:</span>{' '}
+                <span className="text-gray-500">{element.strokeWidth}px</span>
+              </div>
+              {element.type === 'arrow' && (
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">화살표 크기:</span>{' '}
+                  <span className="text-gray-500">{element.arrowHeadSize}</span>
+                </div>
+              )}
+            </>
+          )}
+          
+          {/* 공통 속성 */}
           <div className="text-xs text-gray-600">
             <span className="font-medium">회전:</span>{' '}
             <span className="text-gray-500">{element.rotation}°</span>
@@ -56,6 +103,14 @@ export default function PropertiesPanel() {
           <div className="text-xs text-gray-600">
             <span className="font-medium">Z-Index:</span>{' '}
             <span className="text-gray-500">{element.zIndex}</span>
+          </div>
+          <div className="text-xs text-gray-600">
+            <span className="font-medium">잠금:</span>{' '}
+            <span className="text-gray-500">{element.locked ? '예' : '아니오'}</span>
+          </div>
+          <div className="text-xs text-gray-600">
+            <span className="font-medium">표시:</span>{' '}
+            <span className="text-gray-500">{element.visible ? '예' : '아니오'}</span>
           </div>
         </div>
       </div>
@@ -79,7 +134,8 @@ export default function PropertiesPanel() {
 function getElementTypeName(type: string): string {
   const typeNames: Record<string, string> = {
     shape: '도형',
-    line: '선',
+    line: '직선',
+    arrow: '화살표',
     text: '텍스트',
     image: '이미지',
   };

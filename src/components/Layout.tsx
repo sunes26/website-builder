@@ -1,5 +1,5 @@
 import Toolbar from './Toolbar';
-import Canvas from './Canvas';
+import Canvas from '../Canvas'; // Canvas/index.tsx를 가리킴
 import Sidebar from './Sidebar';
 
 export default function Layout() {
@@ -10,7 +10,7 @@ export default function Layout() {
       
       {/* 중앙 캔버스 */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* 상단 네비게이션 (추후 추가) */}
+        {/* 상단 네비게이션 */}
         <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold text-gray-800">
