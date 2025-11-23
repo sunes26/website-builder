@@ -9,11 +9,11 @@ interface SelectionBoxProps {
 
 export default function SelectionBox({
   element,
-  onResize,
-  onRotate,
+  onResize: _onResize,
+  onRotate: _onRotate,
 }: SelectionBoxProps) {
-  const [isResizing, setIsResizing] = useState(false);
-  const [activeHandle, setActiveHandle] = useState<string | null>(null);
+  const [_isResizing, setIsResizing] = useState(false);
+  const [_activeHandle, setActiveHandle] = useState<string | null>(null);
 
   // Shape 타입만 크기 조절 가능
   const canResize = element.type === 'shape';

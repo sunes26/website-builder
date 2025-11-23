@@ -36,7 +36,7 @@ export function isPointInShape(
   point: { x: number; y: number },
   shape: Shape
 ): boolean {
-  const { position, size, shapeType, rotation } = shape;
+  const { position, size, shapeType, rotation: _rotation } = shape;
 
   // 회전을 고려한 충돌 감지는 복잡하므로, 간단히 바운딩 박스만 체크
   // 나중에 회전 변환을 추가할 수 있음

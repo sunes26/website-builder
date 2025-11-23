@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useBuilderStore } from '../store/builderStore';
 import { getSVGPoint } from '../utils/shapeUtils';
-import type { CanvasElement } from '../types';
 
 interface UseDragElementReturn {
   isDragging: boolean;

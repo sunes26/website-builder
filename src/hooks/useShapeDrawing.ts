@@ -13,7 +13,7 @@ interface UseShapeDrawingReturn {
 
 export function useShapeDrawing(
   currentTool: ShapeType | null,
-  svgRef: React.RefObject<SVGSVGGElement>
+  _svgRef: React.RefObject<SVGSVGElement>
 ): UseShapeDrawingReturn {
   const { addElement, setIsDrawing: setStoreIsDrawing } = useBuilderStore();
   
