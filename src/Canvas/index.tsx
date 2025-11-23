@@ -4,9 +4,11 @@ import { useShapeDrawing } from '../hooks/useShapeDrawing';
 import { useDragElement } from '../hooks/useDragElement';
 import { useLineDrawing } from '../hooks/useLineDrawing';
 import { useTextEditing } from '../hooks/useTextEditing';
+import { useImageUpload } from '../hooks/useImageUpload';
 import ShapeRenderer from './ShapeRenderer';
 import LineRenderer from './LineRenderer';
 import FreeTextRenderer from './FreeTextRenderer';
+import FreeImageRenderer from './FreeImageRenderer';
 import TextEditor from './TextEditor';
 import SelectionBox from './SelectionBox';
 import type { ShapeType } from '../types';
@@ -64,6 +66,11 @@ export default function Canvas() {
     createTextAtPosition,
   } = useTextEditing();
 
+  // 이미지 업로드 훅
+  const {
+    createImageAtPosition,
+  } = useImageUpload();
+
   // 드래그 이동 훅
   const {
     isDragging,
@@ -77,6 +84,18 @@ export default function Canvas() {
 
   // 마우스 다운 이벤트
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    // 이미지 모드: 클릭한 위치에서 이미지 업로드 시작
+    if (currentTool === 'image') {
+      if (!svgRef.current) return;
+      
+      const rect = svgRef.current.getBoundingClientRect();
+      const svgX = ((e.clientX - rect.left) / rect.width) * 1920;
+      const svgY = ((e.clientY - rect.top) / rect.height) * 1080;
+      
+      createImageAtPosition({ x: svgX, y: svgY });
+      return;
+    }
+    
     // 텍스트 모드: 클릭한 위치에 텍스트 생성
     if (currentTool === 'text') {
       if (!svgRef.current) return;
@@ -202,6 +221,8 @@ export default function Canvas() {
               ? 'grabbing' 
               : currentTool === 'text'
               ? 'text'
+              : currentTool === 'image'
+              ? 'pointer'
               : 'default'
           }}
           onMouseDown={handleMouseDown}
@@ -297,6 +318,23 @@ export default function Canvas() {
               );
             }
             
+            // 이미지
+            if (element.type === 'image') {
+              return (
+                <g key={element.id}>
+                  <FreeImageRenderer
+                    image={element}
+                    isSelected={isSelected}
+                    onMouseDown={(e) => handleElementMouseDown(e, element.id)}
+                    onClick={(e) => handleElementClick(e, element.id)}
+                  />
+                  {isSelected && !storeIsDrawing && (
+                    <SelectionBox element={element} />
+                  )}
+                </g>
+              );
+            }
+            
             return null;
           })}
 
@@ -335,6 +373,8 @@ export default function Canvas() {
                   ? '좌측 도구바에서 도구를 선택하세요'
                   : currentTool === 'text'
                   ? '텍스트 도구로 캔버스를 클릭하여 텍스트를 추가하세요'
+                  : currentTool === 'image'
+                  ? '이미지 도구로 캔버스를 클릭하여 이미지를 업로드하세요'
                   : `${getToolName(currentTool)} 도구로 캔버스를 ${isLineDrawingMode ? '클릭' : '드래그'}하여 그리세요`}
               </text>
               <text
@@ -346,9 +386,11 @@ export default function Canvas() {
                 fontFamily="Inter, sans-serif"
               >
                 {currentTool === 'select'
-                  ? '사각형, 원, 삼각형, 선, 텍스트 등을 그려보세요'
+                  ? '사각형, 원, 삼각형, 선, 텍스트, 이미지 등을 그려보세요'
                   : currentTool === 'text'
                   ? '더블클릭하여 텍스트 편집 | ESC: 편집 종료'
+                  : currentTool === 'image'
+                  ? '클릭하면 파일 선택 대화상자가 열립니다'
                   : isLineDrawingMode
                   ? 'Shift: 45도 스냅 | ESC: 취소'
                   : 'Shift: 정사각형/정원 | Alt: 중심에서 그리기'}

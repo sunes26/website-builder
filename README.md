@@ -2,7 +2,7 @@
 
 **React + TypeScript 기반의 노코드 웹사이트 제작 플랫폼**
 
-현재 상태: Phase 4 완료 ✅  
+현재 상태: Phase 5 완료 ✅  
 작성일: 2025년 11월 24일  
 **목표: 손쉬운 웹사이트 제작 + Figma 스타일 편집** 🌐
 
@@ -73,7 +73,7 @@
 - 🔲 도형: 사각형, 원, 삼각형 ✅
 - ➖ 선: 직선, 화살표 ✅
 - 📝 텍스트: 자유 텍스트 추가 및 편집 ✅
-- 🖼️ 이미지: 드래그 앤 드롭 업로드
+- 🖼️ 이미지: 드래그 앤 드롭 업로드 ✅
 
 #### ⚙️ 편집 기능 (Phase 6-8)
 - 📍 절대 위치 배치 (X, Y 좌표) ✅
@@ -162,16 +162,31 @@
 - [x] SVG foreignObject 렌더링
 - [x] 텍스트 선택 및 이동
 
+**Phase 5: 이미지 추가 시스템** ✅
+- [x] Canvas/FreeImageRenderer.tsx 구현 (이미지 렌더링)
+- [x] hooks/useImageUpload.ts 구현 (이미지 업로드 훅)
+- [x] utils/imageUtils.ts 구현 (이미지 유틸리티)
+- [x] 클릭하여 이미지 업로드
+- [x] 파일 선택 대화상자
+- [x] 이미지 자동 크기 조절
+- [x] Data URL 변환
+- [x] 이미지 선택 및 이동
+- [x] Canvas/index.tsx 업데이트 (이미지 모드)
+- [x] PropertiesPanel.tsx 업데이트 (이미지 속성 표시)
+- [x] SVG foreignObject 렌더링
+- [x] 이미지 드래그 이동 지원
+
 ### 🚧 다음 단계
 
-**Phase 5: 이미지 추가 시스템** (1일 예상)
-- [ ] FreeImageRenderer.tsx 신규 생성
-- [ ] ImageUploader.tsx 신규 생성
-- [ ] useImageUpload.ts 신규 생성
-- [ ] 이미지 업로드 (파일 선택)
-- [ ] 드래그 앤 드롭 이미지 업로드
-- [ ] 이미지 크기 조절
-- [ ] 이미지 회전
+**Phase 6: 레이어 시스템** (2일 예상)
+- [ ] LayerPanel/index.tsx 신규 생성
+- [ ] LayerItem.tsx 신규 생성
+- [ ] LayerControls.tsx 신규 생성
+- [ ] 레이어 목록 표시
+- [ ] 레이어 순서 변경 (드래그 앤 드롭)
+- [ ] 레이어 표시/숨김
+- [ ] 레이어 잠금/해제
+- [ ] 레이어 이름 변경
 
 ---
 
@@ -193,7 +208,7 @@ npx tsc --noEmit
 npm run build
 ```
 
-### Phase 4 기능 테스트
+### Phase 5 기능 테스트
 
 ```bash
 # 1. 개발 서버 시작
@@ -213,12 +228,20 @@ npm run dev
 # - 두 번째 클릭 (끝점)
 # - Shift: 45도 스냅 | ESC: 취소
 
-# 텍스트 추가 (Phase 4) ✨ 새로 추가!
+# 텍스트 추가 (Phase 4)
 # - 좌측 도구바에서 텍스트(T) 클릭
 # - 캔버스 클릭하여 텍스트 추가
 # - 자동으로 편집 모드 시작
 # - 더블클릭: 기존 텍스트 편집
 # - Enter: 줄바꿈 | ESC: 편집 종료
+
+# 이미지 추가 (Phase 5) ✨ 새로 추가!
+# - 좌측 도구바에서 이미지(I) 클릭
+# - 캔버스 클릭하여 파일 선택 대화상자 열기
+# - 이미지 파일 선택 (jpg, png, gif, webp, svg)
+# - 자동으로 적절한 크기로 조절되어 추가됨
+# - 드래그하여 이동 가능
+# - 선택 박스로 크기 조절 및 회전
 
 # 선택 및 이동
 # - 선택 모드에서 요소 클릭
@@ -240,7 +263,7 @@ npm run dev
 
 ## 프로젝트 구조
 
-### 현재 구조 (Phase 4 완료)
+### 현재 구조 (Phase 5 완료)
 
 ```
 src/
@@ -248,13 +271,14 @@ src/
 │   ├── Layout.tsx              ✅ 완성
 │   ├── Toolbar.tsx             ✅ 완성
 │   ├── Sidebar.tsx             ✅ 완성
-│   └── PropertiesPanel.tsx     ✅ 완성 (도형/선/텍스트 속성)
+│   └── PropertiesPanel.tsx     ✅ 완성 (도형/선/텍스트/이미지 속성)
 │
 ├── Canvas/
-│   ├── index.tsx               ✅ 완성 (도형+선+텍스트)
+│   ├── index.tsx               ✅ 완성 (도형+선+텍스트+이미지)
 │   ├── ShapeRenderer.tsx       ✅ 완성
 │   ├── LineRenderer.tsx        ✅ 완성
 │   ├── FreeTextRenderer.tsx    ✅ 완성 (Phase 4)
+│   ├── FreeImageRenderer.tsx   ✅ 완성 (Phase 5)
 │   ├── TextEditor.tsx          ✅ 완성 (Phase 4)
 │   └── SelectionBox.tsx        ✅ 완성
 │
@@ -262,17 +286,19 @@ src/
 │   ├── useShapeDrawing.ts      ✅ 완성
 │   ├── useLineDrawing.ts       ✅ 완성
 │   ├── useTextEditing.ts       ✅ 완성 (Phase 4)
-│   └── useDragElement.ts       ✅ 완성 (도형+선+텍스트 드래그)
+│   ├── useImageUpload.ts       ✅ 완성 (Phase 5)
+│   └── useDragElement.ts       ✅ 완성 (도형+선+텍스트+이미지 드래그)
 │
 ├── store/
 │   └── builderStore.ts         ✅ 완성
 │
 ├── types/
-│   └── index.ts                ✅ 완성 (TextElement 포함)
+│   └── index.ts                ✅ 완성 (ImageElement 포함)
 │
 ├── utils/
 │   ├── shapeUtils.ts           ✅ 완성
-│   └── lineUtils.ts            ✅ 완성
+│   ├── lineUtils.ts            ✅ 완성
+│   └── imageUtils.ts           ✅ 완성 (Phase 5)
 │
 ├── main.tsx                    ✅ 완성
 ├── App.tsx                     ✅ 완성
@@ -289,7 +315,7 @@ src/
 │   │   ├── ShapeRenderer.tsx          ✅
 │   │   ├── LineRenderer.tsx           ✅
 │   │   ├── FreeTextRenderer.tsx       ✅ Phase 4
-│   │   ├── FreeImageRenderer.tsx      🆕 Phase 5
+│   │   ├── FreeImageRenderer.tsx      ✅ Phase 5
 │   │   ├── SelectionBox.tsx           ✅
 │   │   └── TextEditor.tsx             ✅ Phase 4
 │   │
@@ -316,7 +342,7 @@ src/
 │   ├── useShapeDrawing.ts             ✅
 │   ├── useLineDrawing.ts              ✅
 │   ├── useTextEditing.ts              ✅ Phase 4
-│   ├── useImageUpload.ts              🆕 Phase 5
+│   ├── useImageUpload.ts              ✅ Phase 5
 │   ├── useDragElement.ts              ✅
 │   ├── useResizeElement.ts            🆕 Phase 7
 │   ├── useCanvasTool.ts               🆕 Phase 7
@@ -330,7 +356,7 @@ src/
 │   └── index.ts                       ✅
 │
 └── utils/
-    ├── imageUtils.ts                  🆕 Phase 5
+    ├── imageUtils.ts                  ✅ Phase 5
     ├── shapeUtils.ts                  ✅
     ├── lineUtils.ts                   ✅
     ├── geometryUtils.ts               🆕 Phase 8
@@ -352,12 +378,12 @@ src/
 | **Phase 2** | 도형 그리기 | 2일 | 🔴 필수 | ✅ 완료 |
 | **Phase 3** | 선 그리기 | 1일 | 🔴 필수 | ✅ 완료 |
 | **Phase 4** | 자유 텍스트 | 2일 | 🔴 필수 | ✅ 완료 |
-| **Phase 5** | 이미지 추가 | 1일 | 🔴 필수 | 📋 대기 |
+| **Phase 5** | 이미지 추가 | 1일 | 🔴 필수 | ✅ 완료 |
 | **Phase 6** | 레이어 시스템 | 2일 | 🟡 권장 | 📋 대기 |
 | **Phase 7** | 속성 편집 | 2일 | 🔴 필수 | 📋 대기 |
 | **Phase 8** | 고급 기능 | 3일 | 🟢 선택 | 📋 대기 |
 
-**현재까지 소요: 7일 / 총 15일**
+**현재까지 소요: 8일 / 총 15일**
 
 #### 🌐 웹사이트 제작 기능 (Phase 9-15)
 
@@ -377,21 +403,21 @@ src/
 
 ### 🎯 마일스톤
 
-#### ✅ MVP v0.4 (텍스트 추가) - 현재 위치
+#### ✅ MVP v0.5 (이미지 추가) - 현재 위치
 ```
-Phase 0 → 1 → 2 → 3 → 4 완료
-= 준비 + 기본 구조 + 도형 + 선 + 텍스트
-= 약 7일 소요
+Phase 0 → 1 → 2 → 3 → 4 → 5 완료
+= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 이미지
+= 약 8일 소요
 ```
-**기능**: 도형, 선, 텍스트를 자유롭게 그리고 편집 가능
+**기능**: 도형, 선, 텍스트, 이미지를 자유롭게 그리고 편집 가능 ⭐
 
 #### MVP v1.0 (기본 디자인 툴)
 ```
-Phase 0 → 1 → 2 → 3 → 4 → 7
-= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 속성 편집
-= 약 11일
+Phase 0 → 1 → 2 → 3 → 4 → 5 → 7
+= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 이미지 + 속성 편집
+= 약 12일
 ```
-**기능**: 기본 도형, 선, 텍스트로 디자인 가능
+**기능**: 모든 요소를 속성 패널에서 상세 편집 가능
 
 #### MVP v2.0 (완전한 디자인 툴)
 ```
@@ -533,50 +559,72 @@ Phase 0~15 전체
 - ✅ 회전 지원
 - ✅ 텍스트 선택 및 이동
 
+---
+
+### Phase 5: 이미지 추가 시스템 ✅ 완료
+
+**목표**: 이미지 업로드 및 배치
+
+**완료된 파일**
+1. ✅ src/Canvas/FreeImageRenderer.tsx (이미지 렌더링)
+2. ✅ src/hooks/useImageUpload.ts (이미지 업로드 훅)
+3. ✅ src/utils/imageUtils.ts (이미지 유틸리티)
+4. ✅ src/Canvas/index.tsx (이미지 모드 추가)
+5. ✅ src/components/PropertiesPanel.tsx (이미지 속성 표시)
+
+**구현된 기능**
+- ✅ 클릭하여 파일 선택 대화상자 열기
+- ✅ 이미지 파일 업로드 (jpg, png, gif, webp, svg)
+- ✅ Data URL 변환 (Base64)
+- ✅ 자동 크기 조절 (최대 960x540)
+- ✅ 종횡비 유지
+- ✅ SVG foreignObject 렌더링
+- ✅ 이미지 선택 (파란색 테두리)
+- ✅ 이미지 드래그 이동
+- ✅ 다중 선택 지원
+- ✅ 선택 박스 (크기 조절 + 회전)
+- ✅ 이미지 미리보기 (속성 패널)
+
 **작동 방식**
 ```
-1. 도구바에서 "텍스트(T)" 클릭
-   → currentTool = 'text'
+1. 도구바에서 "이미지(I)" 클릭
+   → currentTool = 'image'
 
 2. 캔버스 클릭
-   → 클릭한 위치에 새 텍스트 생성
-   → 자동으로 편집 모드 시작
+   → 파일 선택 대화상자 열림
 
-3. 텍스트 입력
-   → 실시간으로 내용만 업데이트
-   → 크기 조절은 편집 종료 시
+3. 이미지 파일 선택
+   → Data URL로 변환
+   → 원본 크기 확인
+   → 비율 유지하며 크기 조절
+   → 캔버스에 추가
 
-4. 편집 종료 (ESC 또는 밖 클릭)
-   → 텍스트 크기 자동 조정
-   → 선택 도구로 전환
-
-5. 기존 텍스트 편집
-   → 더블클릭으로 편집 모드 재진입
+4. 이미지 편집
+   → 드래그: 이동
+   → 선택 박스: 크기 조절 및 회전
+   → 속성 패널: 정보 확인
 ```
 
 **해결된 이슈**
-- ❌ 문제: 한 글자씩만 입력되고 마지막 글자만 남음
-- ✅ 해결: useEffect dependency 제거, 크기 조절을 편집 종료 시로 이동
-- ❌ 문제: 입력이 역순으로 됨 (fake → ekaf)
-- ✅ 해결: contentEditable을 비제어 컴포넌트로 변경, textContent로 초기값 설정
+- ❌ 문제: 이미지 드래그가 안됨
+- ✅ 해결: foreignObject에 직접 이벤트 핸들러 추가, 내부 요소는 pointerEvents: none 설정 (FreeTextRenderer 패턴 적용)
 
 ---
 
-### Phase 5: 이미지 추가 시스템 (다음 단계)
+### Phase 6: 레이어 시스템 (다음 단계)
 
-**목표**: 이미지 업로드 및 배치
+**목표**: 레이어 패널 및 관리 기능
 
 **작업 파일**
 ```
 신규 생성:
-1. src/Canvas/FreeImageRenderer.tsx  (이미지 렌더러)
-2. src/Canvas/ImageUploader.tsx      (이미지 업로더)
-3. src/hooks/useImageUpload.ts       (이미지 업로드 훅)
-4. src/utils/imageUtils.ts           (이미지 유틸리티)
+1. src/components/LayerPanel/index.tsx      (레이어 패널)
+2. src/components/LayerPanel/LayerItem.tsx  (레이어 아이템)
+3. src/components/LayerPanel/LayerControls.tsx (컨트롤)
 
 수정:
-5. src/Canvas/index.tsx              (이미지 모드 추가)
-6. src/components/PropertiesPanel.tsx (이미지 속성 추가)
+4. src/components/Layout.tsx                (레이어 패널 추가)
+5. src/store/builderStore.ts                (레이어 관련 액션)
 ```
 
 ---
@@ -599,10 +647,15 @@ Frontend
 
 그래픽 및 디자인
 ├── SVG                  # 벡터 그래픽
-├── foreignObject        # 텍스트 렌더링 (Phase 4)
+├── foreignObject        # 텍스트/이미지 렌더링 (Phase 4, 5)
 ├── contentEditable      # 텍스트 편집 (Phase 4)
-├── Canvas API           # 이미지 처리 (예정)
+├── Canvas API           # 이미지 처리 (Phase 5)
 └── Framer Motion        # 애니메이션 (선택적)
+
+파일 처리
+├── FileReader API       # 파일 읽기 (Phase 5)
+├── Data URL             # 이미지 인코딩 (Phase 5)
+└── Image API            # 이미지 로드 (Phase 5)
 
 드래그 앤 드롭
 └── @dnd-kit/sortable    # 레이어 정렬 (예정)
@@ -651,14 +704,32 @@ npm run dev
 # - 커서를 끝으로 정확히 이동
 ```
 
-#### Q4: 선을 클릭해도 선택이 안 돼요
+#### Q4: 이미지가 업로드되지 않아요
+```bash
+# 1. 이미지 모드(I)인지 확인
+# 2. 캔버스를 클릭했는지 확인
+# 3. 파일 선택 대화상자가 열렸는지 확인
+# 4. 이미지 파일 형식 확인 (jpg, png, gif, webp, svg)
+# 5. 콘솔에서 오류 확인 (F12)
+```
+
+#### Q5: 이미지가 드래그되지 않아요
+```bash
+# 이미 Phase 5에서 해결됨!
+# FreeImageRenderer.tsx 확인:
+# - foreignObject에 직접 onMouseDown, onClick 추가
+# - 내부 div에 pointerEvents: 'none' 설정
+# - img 태그에 pointerEvents: 'none' 설정
+```
+
+#### Q6: 선을 클릭해도 선택이 안 돼요
 ```bash
 # 1. 선택 모드(V)인지 확인
 # 2. 선 위를 정확히 클릭하세요
 # 3. 콘솔에서 오류 확인 (F12)
 ```
 
-#### Q5: 빌드가 실패해요
+#### Q7: 빌드가 실패해요
 ```bash
 # 1. node_modules 삭제 후 재설치
 rm -rf node_modules package-lock.json
@@ -692,8 +763,9 @@ npm run lint
 ## 향후 계획
 
 ### 단기 (1-2개월) - MVP v3.0
-- [ ] Phase 5 완료 (이미지)
-- [ ] Phase 6-8 완료 (레이어, 속성, 고급 기능)
+- [ ] Phase 6 완료 (레이어)
+- [ ] Phase 7 완료 (속성 편집)
+- [ ] Phase 8 완료 (고급 기능)
 - [ ] Phase 9-11 완료 (페이지 관리, 인터랙션, 반응형)
 - [ ] Phase 13 완료 (배포 시스템)
 - [ ] **첫 번째 웹사이트 배포 가능** 🎉
@@ -725,6 +797,8 @@ npm run lint
 - [SVG MDN](https://developer.mozilla.org/en-US/docs/Web/SVG)
 - [contentEditable MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable)
 - [foreignObject MDN](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject)
+- [FileReader MDN](https://developer.mozilla.org/en-US/docs/Web/API/FileReader)
+- [Image API MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image)
 
 ### 디자인 툴 참고
 - [Figma](https://www.figma.com/)
@@ -751,4 +825,4 @@ MIT License
 
 **Let's build something amazing! 🚀**
 
-*최종 업데이트: 2025년 11월 24일 (Phase 4 완료)*
+*최종 업데이트: 2025년 11월 24일 (Phase 5 완료)*

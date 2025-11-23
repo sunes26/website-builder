@@ -91,6 +91,33 @@ export default function PropertiesPanel() {
             </>
           )}
           
+          {/* 이미지 전용 속성 */}
+          {element.type === 'image' && (
+            <>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">소스:</span>{' '}
+                <span className="text-gray-500 truncate block max-w-full">
+                  {element.src ? (element.src.length > 50 ? element.src.substring(0, 50) + '...' : element.src) : '(없음)'}
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">대체 텍스트:</span>{' '}
+                <span className="text-gray-500">{element.alt || '(없음)'}</span>
+              </div>
+              {element.src && (
+                <div className="mt-3">
+                  <div className="w-full aspect-video bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                    <img 
+                      src={element.src} 
+                      alt={element.alt || '미리보기'} 
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          
           {/* 선/화살표 속성 */}
           {(element.type === 'line' || element.type === 'arrow') && (
             <>
@@ -165,6 +192,20 @@ export default function PropertiesPanel() {
             • 더블클릭: 텍스트 편집 시작<br/>
             • Enter: 줄바꿈<br/>
             • ESC: 편집 종료
+          </p>
+        </div>
+      )}
+
+      {/* 이미지 편집 안내 */}
+      {element.type === 'image' && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+          <p className="text-xs text-purple-700 font-medium mb-1">
+            🖼️ 이미지 편집 방법
+          </p>
+          <p className="text-xs text-purple-600">
+            • 드래그: 이미지 이동<br/>
+            • 선택 박스: 크기 조절 및 회전<br/>
+            • 속성 편집: Phase 7 예정
           </p>
         </div>
       )}
