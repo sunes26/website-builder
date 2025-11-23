@@ -3,8 +3,11 @@ import { useBuilderStore } from '../store/builderStore';
 import { useShapeDrawing } from '../hooks/useShapeDrawing';
 import { useDragElement } from '../hooks/useDragElement';
 import { useLineDrawing } from '../hooks/useLineDrawing';
+import { useTextEditing } from '../hooks/useTextEditing';
 import ShapeRenderer from './ShapeRenderer';
 import LineRenderer from './LineRenderer';
+import FreeTextRenderer from './FreeTextRenderer';
+import TextEditor from './TextEditor';
 import SelectionBox from './SelectionBox';
 import type { ShapeType } from '../types';
 
@@ -52,7 +55,16 @@ export default function Canvas() {
     handleMouseUp: handleLineDrawingMouseUp,
   } = useLineDrawing(lineType, svgRef);
 
-  // 드래그 이동 훅 (draggedElementId는 사용하지 않으므로 제외)
+  // 텍스트 편집 훅
+  const {
+    editingTextId,
+    startEditing,
+    stopEditing,
+    updateTextContent,
+    createTextAtPosition,
+  } = useTextEditing();
+
+  // 드래그 이동 훅
   const {
     isDragging,
     handleDragStart,
@@ -65,6 +77,18 @@ export default function Canvas() {
 
   // 마우스 다운 이벤트
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    // 텍스트 모드: 클릭한 위치에 텍스트 생성
+    if (currentTool === 'text') {
+      if (!svgRef.current) return;
+      
+      const rect = svgRef.current.getBoundingClientRect();
+      const svgX = ((e.clientX - rect.left) / rect.width) * 1920;
+      const svgY = ((e.clientY - rect.top) / rect.height) * 1080;
+      
+      createTextAtPosition({ x: svgX, y: svgY });
+      return;
+    }
+    
     // 선택 모드 또는 도형 그리기 모드 또는 선 그리기 모드
     if (currentTool === 'select') {
       // SVG 배경 클릭 시 선택 해제
@@ -112,7 +136,6 @@ export default function Canvas() {
       if (isDragging) {
         handleDragEnd();
       }
-      // 선 그리기는 클릭 방식이라 전역 이벤트 불필요
     };
 
     window.addEventListener('mouseup', handleGlobalMouseUp);
@@ -142,6 +165,22 @@ export default function Canvas() {
     }
   };
 
+  // 텍스트 더블클릭 핸들러
+  const handleTextDoubleClick = (e: React.MouseEvent, textId: string) => {
+    e.stopPropagation();
+    startEditing(textId);
+  };
+
+  // 텍스트 내용 변경 핸들러
+  const handleTextContentChange = (textId: string, content: string) => {
+    updateTextContent(textId, content);
+  };
+
+  // 텍스트 편집 종료 핸들러
+  const handleTextBlur = () => {
+    stopEditing();
+  };
+
   // zIndex 순서로 정렬 (낮은 것부터 그려야 위에 있는 것이 나중에 그려짐)
   const sortedElements = [...elements].sort((a, b) => a.zIndex - b.zIndex);
 
@@ -157,7 +196,13 @@ export default function Canvas() {
           style={{ 
             maxWidth: '100%', 
             height: 'auto',
-            cursor: isDrawing ? 'crosshair' : isDragging ? 'grabbing' : 'default'
+            cursor: isDrawing 
+              ? 'crosshair' 
+              : isDragging 
+              ? 'grabbing' 
+              : currentTool === 'text'
+              ? 'text'
+              : 'default'
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -187,6 +232,7 @@ export default function Canvas() {
           {/* 기존 요소들 렌더링 */}
           {sortedElements.map((element) => {
             const isSelected = selectedElementIds.includes(element.id);
+            const isEditingThis = editingTextId === element.id;
             
             // 도형
             if (element.type === 'shape') {
@@ -215,6 +261,38 @@ export default function Canvas() {
                     onMouseDown={(e) => handleElementMouseDown(e, element.id)}
                     onClick={(e) => handleElementClick(e, element.id)}
                   />
+                </g>
+              );
+            }
+            
+            // 텍스트
+            if (element.type === 'text') {
+              // 편집 중이면 TextEditor 렌더링
+              if (isEditingThis) {
+                return (
+                  <TextEditor
+                    key={element.id}
+                    text={element}
+                    onContentChange={(content) => handleTextContentChange(element.id, content)}
+                    onBlur={handleTextBlur}
+                  />
+                );
+              }
+              
+              // 일반 렌더링
+              return (
+                <g key={element.id}>
+                  <FreeTextRenderer
+                    text={element}
+                    isSelected={isSelected}
+                    isEditing={false}
+                    onDoubleClick={(e) => handleTextDoubleClick(e, element.id)}
+                    onMouseDown={(e) => handleElementMouseDown(e, element.id)}
+                    onClick={(e) => handleElementClick(e, element.id)}
+                  />
+                  {isSelected && !storeIsDrawing && (
+                    <SelectionBox element={element} />
+                  )}
                 </g>
               );
             }
@@ -255,6 +333,8 @@ export default function Canvas() {
               >
                 {currentTool === 'select'
                   ? '좌측 도구바에서 도구를 선택하세요'
+                  : currentTool === 'text'
+                  ? '텍스트 도구로 캔버스를 클릭하여 텍스트를 추가하세요'
                   : `${getToolName(currentTool)} 도구로 캔버스를 ${isLineDrawingMode ? '클릭' : '드래그'}하여 그리세요`}
               </text>
               <text
@@ -266,7 +346,9 @@ export default function Canvas() {
                 fontFamily="Inter, sans-serif"
               >
                 {currentTool === 'select'
-                  ? '사각형, 원, 삼각형, 선 등을 그려보세요'
+                  ? '사각형, 원, 삼각형, 선, 텍스트 등을 그려보세요'
+                  : currentTool === 'text'
+                  ? '더블클릭하여 텍스트 편집 | ESC: 편집 종료'
                   : isLineDrawingMode
                   ? 'Shift: 45도 스냅 | ESC: 취소'
                   : 'Shift: 정사각형/정원 | Alt: 중심에서 그리기'}

@@ -2,7 +2,7 @@
 
 **React + TypeScript 기반의 노코드 웹사이트 제작 플랫폼**
 
-현재 상태: Phase 3 완료 ✅  
+현재 상태: Phase 4 완료 ✅  
 작성일: 2025년 11월 24일  
 **목표: 손쉬운 웹사이트 제작 + Figma 스타일 편집** 🌐
 
@@ -72,7 +72,7 @@
 #### 📐 디자인 도구 (Phase 1-5)
 - 🔲 도형: 사각형, 원, 삼각형 ✅
 - ➖ 선: 직선, 화살표 ✅
-- 📝 텍스트: 자유 텍스트 추가 및 편집
+- 📝 텍스트: 자유 텍스트 추가 및 편집 ✅
 - 🖼️ 이미지: 드래그 앤 드롭 업로드
 
 #### ⚙️ 편집 기능 (Phase 6-8)
@@ -146,15 +146,32 @@
 - [x] PropertiesPanel.tsx 업데이트 (선 속성 표시)
 - [x] types/index.ts 업데이트 (opacity 속성 추가)
 
+**Phase 4: 자유 텍스트 시스템** ✅
+- [x] Canvas/FreeTextRenderer.tsx 구현 (텍스트 렌더링)
+- [x] Canvas/TextEditor.tsx 구현 (인라인 편집기)
+- [x] hooks/useTextEditing.ts 구현 (텍스트 편집 훅)
+- [x] 클릭하여 텍스트 추가
+- [x] 더블클릭으로 인라인 편집
+- [x] contentEditable 기반 편집
+- [x] 자동 크기 조절
+- [x] Enter: 줄바꿈 지원
+- [x] ESC: 편집 종료
+- [x] 폰트, 크기, 색상, 정렬 지원
+- [x] Canvas/index.tsx 업데이트 (텍스트 모드)
+- [x] PropertiesPanel.tsx 업데이트 (텍스트 속성 표시)
+- [x] SVG foreignObject 렌더링
+- [x] 텍스트 선택 및 이동
+
 ### 🚧 다음 단계
 
-**Phase 4: 자유 텍스트 시스템** (2일 예상)
-- [ ] FreeTextRenderer.tsx 신규 생성
-- [ ] TextEditor.tsx 신규 생성
-- [ ] useTextEditing.ts 신규 생성
-- [ ] 클릭하여 텍스트 추가
-- [ ] 인라인 편집 (더블클릭)
-- [ ] 폰트, 크기, 색상 조정
+**Phase 5: 이미지 추가 시스템** (1일 예상)
+- [ ] FreeImageRenderer.tsx 신규 생성
+- [ ] ImageUploader.tsx 신규 생성
+- [ ] useImageUpload.ts 신규 생성
+- [ ] 이미지 업로드 (파일 선택)
+- [ ] 드래그 앤 드롭 이미지 업로드
+- [ ] 이미지 크기 조절
+- [ ] 이미지 회전
 
 ---
 
@@ -176,7 +193,7 @@ npx tsc --noEmit
 npm run build
 ```
 
-### Phase 3 기능 테스트
+### Phase 4 기능 테스트
 
 ```bash
 # 1. 개발 서버 시작
@@ -189,12 +206,19 @@ npm run dev
 # - 캔버스에서 드래그하여 도형 그리기
 # - Shift: 정사각형/정원 | Alt: 중심에서 그리기
 
-# 선 그리기 (Phase 3) ✨ 새로 추가!
+# 선 그리기 (Phase 3)
 # - 좌측 도구바에서 직선/화살표 클릭
 # - 캔버스에서 첫 번째 클릭 (시작점)
 # - 마우스 이동하여 미리보기 확인
 # - 두 번째 클릭 (끝점)
 # - Shift: 45도 스냅 | ESC: 취소
+
+# 텍스트 추가 (Phase 4) ✨ 새로 추가!
+# - 좌측 도구바에서 텍스트(T) 클릭
+# - 캔버스 클릭하여 텍스트 추가
+# - 자동으로 편집 모드 시작
+# - 더블클릭: 기존 텍스트 편집
+# - Enter: 줄바꿈 | ESC: 편집 종료
 
 # 선택 및 이동
 # - 선택 모드에서 요소 클릭
@@ -216,7 +240,7 @@ npm run dev
 
 ## 프로젝트 구조
 
-### 현재 구조 (Phase 3 완료)
+### 현재 구조 (Phase 4 완료)
 
 ```
 src/
@@ -224,28 +248,31 @@ src/
 │   ├── Layout.tsx              ✅ 완성
 │   ├── Toolbar.tsx             ✅ 완성
 │   ├── Sidebar.tsx             ✅ 완성
-│   └── PropertiesPanel.tsx     ✅ 완성 (도형/선 속성 표시)
+│   └── PropertiesPanel.tsx     ✅ 완성 (도형/선/텍스트 속성)
 │
 ├── Canvas/
-│   ├── index.tsx               ✅ 완성 (도형+선 그리기)
+│   ├── index.tsx               ✅ 완성 (도형+선+텍스트)
 │   ├── ShapeRenderer.tsx       ✅ 완성
-│   ├── LineRenderer.tsx        ✅ 완성 (Phase 3)
+│   ├── LineRenderer.tsx        ✅ 완성
+│   ├── FreeTextRenderer.tsx    ✅ 완성 (Phase 4)
+│   ├── TextEditor.tsx          ✅ 완성 (Phase 4)
 │   └── SelectionBox.tsx        ✅ 완성
 │
 ├── hooks/
 │   ├── useShapeDrawing.ts      ✅ 완성
-│   ├── useLineDrawing.ts       ✅ 완성 (Phase 3)
-│   └── useDragElement.ts       ✅ 완성 (도형+선 드래그)
+│   ├── useLineDrawing.ts       ✅ 완성
+│   ├── useTextEditing.ts       ✅ 완성 (Phase 4)
+│   └── useDragElement.ts       ✅ 완성 (도형+선+텍스트 드래그)
 │
 ├── store/
 │   └── builderStore.ts         ✅ 완성
 │
 ├── types/
-│   └── index.ts                ✅ 완성 (LineElement, ArrowElement 추가)
+│   └── index.ts                ✅ 완성 (TextElement 포함)
 │
 ├── utils/
 │   ├── shapeUtils.ts           ✅ 완성
-│   └── lineUtils.ts            ✅ 완성 (Phase 3)
+│   └── lineUtils.ts            ✅ 완성
 │
 ├── main.tsx                    ✅ 완성
 ├── App.tsx                     ✅ 완성
@@ -261,10 +288,10 @@ src/
 │   │   ├── index.tsx                  ✅
 │   │   ├── ShapeRenderer.tsx          ✅
 │   │   ├── LineRenderer.tsx           ✅
-│   │   ├── FreeTextRenderer.tsx       🆕 Phase 4
+│   │   ├── FreeTextRenderer.tsx       ✅ Phase 4
 │   │   ├── FreeImageRenderer.tsx      🆕 Phase 5
 │   │   ├── SelectionBox.tsx           ✅
-│   │   └── TextEditor.tsx             🆕 Phase 4
+│   │   └── TextEditor.tsx             ✅ Phase 4
 │   │
 │   ├── LayerPanel/             🆕 Phase 6
 │   │   ├── index.tsx
@@ -288,7 +315,8 @@ src/
 ├── hooks/                      
 │   ├── useShapeDrawing.ts             ✅
 │   ├── useLineDrawing.ts              ✅
-│   ├── useTextEditing.ts              🆕 Phase 4
+│   ├── useTextEditing.ts              ✅ Phase 4
+│   ├── useImageUpload.ts              🆕 Phase 5
 │   ├── useDragElement.ts              ✅
 │   ├── useResizeElement.ts            🆕 Phase 7
 │   ├── useCanvasTool.ts               🆕 Phase 7
@@ -302,7 +330,7 @@ src/
 │   └── index.ts                       ✅
 │
 └── utils/
-    ├── imageUtils.ts                  
+    ├── imageUtils.ts                  🆕 Phase 5
     ├── shapeUtils.ts                  ✅
     ├── lineUtils.ts                   ✅
     ├── geometryUtils.ts               🆕 Phase 8
@@ -323,13 +351,13 @@ src/
 | **Phase 1** | 기본 구조 및 타입 | 1일 | 🔴 필수 | ✅ 완료 |
 | **Phase 2** | 도형 그리기 | 2일 | 🔴 필수 | ✅ 완료 |
 | **Phase 3** | 선 그리기 | 1일 | 🔴 필수 | ✅ 완료 |
-| **Phase 4** | 자유 텍스트 | 2일 | 🔴 필수 | 📋 대기 |
+| **Phase 4** | 자유 텍스트 | 2일 | 🔴 필수 | ✅ 완료 |
 | **Phase 5** | 이미지 추가 | 1일 | 🔴 필수 | 📋 대기 |
 | **Phase 6** | 레이어 시스템 | 2일 | 🟡 권장 | 📋 대기 |
 | **Phase 7** | 속성 편집 | 2일 | 🔴 필수 | 📋 대기 |
 | **Phase 8** | 고급 기능 | 3일 | 🟢 선택 | 📋 대기 |
 
-**현재까지 소요: 5일 / 총 15일**
+**현재까지 소요: 7일 / 총 15일**
 
 #### 🌐 웹사이트 제작 기능 (Phase 9-15)
 
@@ -349,19 +377,19 @@ src/
 
 ### 🎯 마일스톤
 
-#### ✅ MVP v0.3 (선 그리기) - 현재 위치
+#### ✅ MVP v0.4 (텍스트 추가) - 현재 위치
 ```
-Phase 0 → 1 → 2 → 3 완료
-= 준비 + 기본 구조 + 도형 + 선 그리기
-= 약 5일 소요
+Phase 0 → 1 → 2 → 3 → 4 완료
+= 준비 + 기본 구조 + 도형 + 선 + 텍스트
+= 약 7일 소요
 ```
-**기능**: 도형과 선을 자유롭게 그리고 이동 가능
+**기능**: 도형, 선, 텍스트를 자유롭게 그리고 편집 가능
 
 #### MVP v1.0 (기본 디자인 툴)
 ```
 Phase 0 → 1 → 2 → 3 → 4 → 7
 = 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 속성 편집
-= 약 10일
+= 약 11일
 ```
 **기능**: 기본 도형, 선, 텍스트로 디자인 가능
 
@@ -451,26 +479,6 @@ Phase 0~15 전체
 - ✅ 다중 선택 (Ctrl/Cmd + 클릭)
 - ✅ zIndex 순서 관리
 
-**작동 방식**
-```
-1. 도구바에서 "사각형" 클릭
-   → currentTool = 'rectangle'
-
-2. 캔버스에서 마우스 다운
-   → 시작점 저장 (startX, startY)
-   → isDrawing = true
-
-3. 마우스 이동
-   → 실시간 크기 계산
-   → 반투명 미리보기 도형 표시
-
-4. 마우스 업
-   → 도형 완성
-   → store.addElement(newShape)
-   → isDrawing = false
-   → currentTool = 'select' (자동 전환)
-```
-
 ---
 
 ### Phase 3: 선 그리기 시스템 ✅ 완료
@@ -490,7 +498,7 @@ Phase 0~15 전체
 - ✅ 직선 그리기 (클릭-이동-클릭)
 - ✅ 화살표 그리기 (화살촉 자동 생성)
 - ✅ 실시간 미리보기 (반투명)
-- ✅ Shift 키: 45도 스냅 (0°, 45°, 90°, 135°, 180° 등)
+- ✅ Shift 키: 45도 스냅
 - ✅ ESC 키: 그리기 취소
 - ✅ 선 선택 (파란색 테두리 + 시작/끝점 원)
 - ✅ 선 드래그 이동
@@ -498,100 +506,78 @@ Phase 0~15 전체
 - ✅ SVG 화살표 마커
 - ✅ 투명 히트 영역 (클릭하기 쉬움)
 
+---
+
+### Phase 4: 자유 텍스트 시스템 ✅ 완료
+
+**목표**: 텍스트 추가 및 인라인 편집
+
+**완료된 파일**
+1. ✅ src/Canvas/FreeTextRenderer.tsx (텍스트 렌더링)
+2. ✅ src/Canvas/TextEditor.tsx (인라인 편집기)
+3. ✅ src/hooks/useTextEditing.ts (텍스트 편집 훅)
+4. ✅ src/Canvas/index.tsx (텍스트 모드 추가)
+5. ✅ src/components/PropertiesPanel.tsx (텍스트 속성 표시)
+
+**구현된 기능**
+- ✅ 클릭하여 텍스트 추가
+- ✅ 더블클릭으로 인라인 편집
+- ✅ contentEditable 기반 편집
+- ✅ 실시간 내용 업데이트
+- ✅ Enter: 줄바꿈 지원
+- ✅ ESC: 편집 종료
+- ✅ 포커스 아웃: 자동 저장
+- ✅ 자동 크기 조절 (편집 종료 시)
+- ✅ SVG foreignObject 렌더링
+- ✅ 폰트, 크기, 색상, 정렬 지원
+- ✅ 회전 지원
+- ✅ 텍스트 선택 및 이동
+
 **작동 방식**
 ```
-1. 도구바에서 "직선" 또는 "화살표" 클릭
-   → currentTool = 'line' or 'arrow'
+1. 도구바에서 "텍스트(T)" 클릭
+   → currentTool = 'text'
 
-2. 캔버스에서 첫 번째 클릭
-   → 시작점 저장 (startPoint)
-   → isDrawing = true
+2. 캔버스 클릭
+   → 클릭한 위치에 새 텍스트 생성
+   → 자동으로 편집 모드 시작
 
-3. 마우스 이동
-   → 실시간 미리보기 선 표시
-   → Shift 키: 45도 스냅
+3. 텍스트 입력
+   → 실시간으로 내용만 업데이트
+   → 크기 조절은 편집 종료 시
 
-4. 두 번째 클릭 또는 ESC
-   → 선 완성 (클릭) 또는 취소 (ESC)
-   → store.addElement(newLine)
-   → isDrawing = false
+4. 편집 종료 (ESC 또는 밖 클릭)
+   → 텍스트 크기 자동 조정
+   → 선택 도구로 전환
+
+5. 기존 텍스트 편집
+   → 더블클릭으로 편집 모드 재진입
 ```
+
+**해결된 이슈**
+- ❌ 문제: 한 글자씩만 입력되고 마지막 글자만 남음
+- ✅ 해결: useEffect dependency 제거, 크기 조절을 편집 종료 시로 이동
+- ❌ 문제: 입력이 역순으로 됨 (fake → ekaf)
+- ✅ 해결: contentEditable을 비제어 컴포넌트로 변경, textContent로 초기값 설정
 
 ---
 
-### Phase 4: 자유 텍스트 시스템 (다음 단계)
+### Phase 5: 이미지 추가 시스템 (다음 단계)
 
-**목표**: 텍스트 추가 및 인라인 편집
+**목표**: 이미지 업로드 및 배치
 
 **작업 파일**
 ```
 신규 생성:
-1. src/Canvas/FreeTextRenderer.tsx  (텍스트 렌더러)
-2. src/Canvas/TextEditor.tsx        (텍스트 에디터)
-3. src/hooks/useTextEditing.ts      (텍스트 편집 훅)
+1. src/Canvas/FreeImageRenderer.tsx  (이미지 렌더러)
+2. src/Canvas/ImageUploader.tsx      (이미지 업로더)
+3. src/hooks/useImageUpload.ts       (이미지 업로드 훅)
+4. src/utils/imageUtils.ts           (이미지 유틸리티)
 
 수정:
-4. src/Canvas/index.tsx             (텍스트 모드 추가)
+5. src/Canvas/index.tsx              (이미지 모드 추가)
+6. src/components/PropertiesPanel.tsx (이미지 속성 추가)
 ```
-
-**GPT 프롬프트**
-```
-Phase 4를 개발해주세요.
-
-배경:
-- Figma처럼 클릭하여 텍스트를 추가하고 바로 편집할 수 있어야 합니다.
-
-요구사항:
-
-1. Canvas/FreeTextRenderer.tsx
-   - foreignObject 내부에 div
-   - 폰트, 크기, 색상, 정렬 적용
-   - 더블클릭: 편집 모드
-
-2. Canvas/TextEditor.tsx
-   - contentEditable div
-   - Enter: 줄바꿈
-   - Escape: 편집 종료
-   - 포커스 아웃: 편집 종료
-
-3. hooks/useTextEditing.ts
-   - 편집 시작/종료 로직
-   - 실시간 업데이트
-
-4. Canvas/index.tsx 수정
-   - 텍스트 모드 추가
-   - 클릭 시 새 텍스트 생성 + 자동 편집 시작
-
-기술:
-- contentEditable 사용
-- 자동 크기 조절 (최소 50px, 최대 500px)
-
-위 요구사항에 맞춰 4개 파일의 전체 코드를 작성해주세요.
-```
-
----
-
-### Phase 5: 이미지 추가 시스템 (1일)
-
-**목표**: 이미지 업로드 및 배치
-
----
-
-### Phase 6: 레이어 시스템 (2일)
-
-**목표**: 레이어 목록 표시 및 순서 변경
-
----
-
-### Phase 7: 속성 편집 패널 (2일)
-
-**목표**: 요소별 속성 폼 및 실시간 업데이트
-
----
-
-### Phase 8: 고급 기능 (3일)
-
-**목표**: 정렬, 그룹화, 키보드 단축키
 
 ---
 
@@ -613,6 +599,8 @@ Frontend
 
 그래픽 및 디자인
 ├── SVG                  # 벡터 그래픽
+├── foreignObject        # 텍스트 렌더링 (Phase 4)
+├── contentEditable      # 텍스트 편집 (Phase 4)
 ├── Canvas API           # 이미지 처리 (예정)
 └── Framer Motion        # 애니메이션 (선택적)
 
@@ -643,26 +631,31 @@ npx tsc --noEmit
 npm run dev
 ```
 
-#### Q2: 선을 클릭해도 선택이 안 돼요
+#### Q2: 텍스트가 한 글자만 입력돼요
+```bash
+# 이미 Phase 4에서 해결됨!
+# 최신 버전의 TextEditor.tsx와 useTextEditing.ts 사용 확인
+
+# 주요 해결 사항:
+# - useEffect dependency 제거 (마운트 시에만 실행)
+# - contentEditable을 비제어 컴포넌트로 변경
+# - 크기 조절을 편집 종료 시로 이동
+```
+
+#### Q3: 텍스트 입력이 역순이에요 (fake → ekaf)
+```bash
+# 이미 Phase 4에서 해결됨!
+# TextEditor.tsx의 useEffect에서:
+# - textContent로 초기값 설정
+# - children 속성 제거
+# - 커서를 끝으로 정확히 이동
+```
+
+#### Q4: 선을 클릭해도 선택이 안 돼요
 ```bash
 # 1. 선택 모드(V)인지 확인
 # 2. 선 위를 정확히 클릭하세요
-#    (투명 히트 영역이 넓어서 대부분 잘 됩니다)
 # 3. 콘솔에서 오류 확인 (F12)
-```
-
-#### Q3: 45도 스냅이 작동 안 해요
-```bash
-# 1. Shift 키를 누른 채로 마우스를 이동하세요
-# 2. 직선/화살표 도구가 선택되어 있는지 확인
-# 3. useLineDrawing 훅의 snapToAngle 함수 확인
-```
-
-#### Q4: ESC 키가 작동 안 해요
-```bash
-# 1. 선 그리기 중인지 확인
-# 2. 다른 입력 필드에 포커스가 있지 않은지 확인
-# 3. 브라우저 콘솔에서 오류 확인
 ```
 
 #### Q5: 빌드가 실패해요
@@ -699,7 +692,7 @@ npm run lint
 ## 향후 계획
 
 ### 단기 (1-2개월) - MVP v3.0
-- [ ] Phase 4-5 완료 (텍스트, 이미지)
+- [ ] Phase 5 완료 (이미지)
 - [ ] Phase 6-8 완료 (레이어, 속성, 고급 기능)
 - [ ] Phase 9-11 완료 (페이지 관리, 인터랙션, 반응형)
 - [ ] Phase 13 완료 (배포 시스템)
@@ -730,6 +723,8 @@ npm run lint
 - [Zustand](https://docs.pmnd.rs/zustand/)
 - [Tailwind CSS](https://tailwindcss.com/docs)
 - [SVG MDN](https://developer.mozilla.org/en-US/docs/Web/SVG)
+- [contentEditable MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable)
+- [foreignObject MDN](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject)
 
 ### 디자인 툴 참고
 - [Figma](https://www.figma.com/)
@@ -756,4 +751,4 @@ MIT License
 
 **Let's build something amazing! 🚀**
 
-*최종 업데이트: 2025년 11월 24일 (Phase 3 완료)*
+*최종 업데이트: 2025년 11월 24일 (Phase 4 완료)*

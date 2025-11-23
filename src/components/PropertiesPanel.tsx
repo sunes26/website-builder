@@ -63,6 +63,34 @@ export default function PropertiesPanel() {
             </>
           )}
           
+          {/* 텍스트 전용 속성 */}
+          {element.type === 'text' && (
+            <>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">내용:</span>{' '}
+                <span className="text-gray-500">
+                  {element.content || '(비어있음)'}
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">폰트 크기:</span>{' '}
+                <span className="text-gray-500">{element.fontSize}px</span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">폰트:</span>{' '}
+                <span className="text-gray-500">{element.fontFamily}</span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">색상:</span>{' '}
+                <span className="text-gray-500">{element.color}</span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span className="font-medium">정렬:</span>{' '}
+                <span className="text-gray-500">{element.textAlign}</span>
+              </div>
+            </>
+          )}
+          
           {/* 선/화살표 속성 */}
           {(element.type === 'line' || element.type === 'arrow') && (
             <>
@@ -123,6 +151,20 @@ export default function PropertiesPanel() {
           </p>
           <p className="text-xs text-blue-600 mt-1">
             공통 속성 편집은 Phase 7에서 지원됩니다
+          </p>
+        </div>
+      )}
+
+      {/* 텍스트 편집 안내 */}
+      {element.type === 'text' && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+          <p className="text-xs text-green-700 font-medium mb-1">
+            ✨ 텍스트 편집 방법
+          </p>
+          <p className="text-xs text-green-600">
+            • 더블클릭: 텍스트 편집 시작<br/>
+            • Enter: 줄바꿈<br/>
+            • ESC: 편집 종료
           </p>
         </div>
       )}
