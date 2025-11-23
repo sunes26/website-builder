@@ -210,4 +210,96 @@ export const useBuilderStore = create<BuilderState>((set) => ({
       };
     });
   },
+
+  // 레이어 위로 이동 (zIndex 증가)
+  moveLayerUp: (id: string) => {
+    set((state) => {
+      const element = state.elements.find((el) => el.id === id);
+      if (!element) return state;
+
+      // 현재 zIndex보다 바로 위에 있는 요소 찾기
+      const elementsAbove = state.elements
+        .filter((el) => el.zIndex > element.zIndex)
+        .sort((a, b) => a.zIndex - b.zIndex);
+
+      if (elementsAbove.length === 0) {
+        // 이미 최상위면 아무것도 안 함
+        return state;
+      }
+
+      // 바로 위 요소와 zIndex 교환
+      const nextElement = elementsAbove[0];
+      const newZIndex = nextElement.zIndex;
+      const oldZIndex = element.zIndex;
+
+      const newElements: CanvasElement[] = state.elements.map((el) => {
+        if (el.id === id) {
+          return { ...el, zIndex: newZIndex } as CanvasElement;
+        } else if (el.id === nextElement.id) {
+          return { ...el, zIndex: oldZIndex } as CanvasElement;
+        }
+        return el;
+      });
+
+      const updatedPage: Page = {
+        ...state.currentPage,
+        elements: newElements,
+        updatedAt: new Date(),
+      };
+
+      return {
+        elements: newElements,
+        currentPage: updatedPage,
+        pages: state.pages.map((p) => 
+          p.id === updatedPage.id ? updatedPage : p
+        ),
+      };
+    });
+  },
+
+  // 레이어 아래로 이동 (zIndex 감소)
+  moveLayerDown: (id: string) => {
+    set((state) => {
+      const element = state.elements.find((el) => el.id === id);
+      if (!element) return state;
+
+      // 현재 zIndex보다 바로 아래에 있는 요소 찾기
+      const elementsBelow = state.elements
+        .filter((el) => el.zIndex < element.zIndex)
+        .sort((a, b) => b.zIndex - a.zIndex);
+
+      if (elementsBelow.length === 0) {
+        // 이미 최하위면 아무것도 안 함
+        return state;
+      }
+
+      // 바로 아래 요소와 zIndex 교환
+      const prevElement = elementsBelow[0];
+      const newZIndex = prevElement.zIndex;
+      const oldZIndex = element.zIndex;
+
+      const newElements: CanvasElement[] = state.elements.map((el) => {
+        if (el.id === id) {
+          return { ...el, zIndex: newZIndex } as CanvasElement;
+        } else if (el.id === prevElement.id) {
+          return { ...el, zIndex: oldZIndex } as CanvasElement;
+        }
+        return el;
+      });
+
+      const updatedPage: Page = {
+        ...state.currentPage,
+        elements: newElements,
+        updatedAt: new Date(),
+      };
+
+      return {
+        elements: newElements,
+        currentPage: updatedPage,
+        pages: state.pages.map((p) => 
+          p.id === updatedPage.id ? updatedPage : p
+        ),
+      };
+    });
+  },
 }));

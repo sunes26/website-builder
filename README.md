@@ -2,7 +2,7 @@
 
 **React + TypeScript 기반의 노코드 웹사이트 제작 플랫폼**
 
-현재 상태: Phase 5 완료 ✅  
+현재 상태: Phase 6 완료 ✅  
 작성일: 2025년 11월 24일  
 **목표: 손쉬운 웹사이트 제작 + Figma 스타일 편집** 🌐
 
@@ -77,13 +77,16 @@
 
 #### ⚙️ 편집 기능 (Phase 6-8)
 - 📍 절대 위치 배치 (X, Y 좌표) ✅
-- ⚙️ 실시간 속성 편집
 - 📚 레이어 시스템 (zIndex) ✅
+- 🔄 레이어 순서 변경 ✅
+- 👁️ 레이어 표시/숨김 ✅
+- 🔒 레이어 잠금/해제 ✅
 - ✨ 선택, 이동, 크기 조절, 회전 ✅ (기본 기능)
-- 📐 정렬 도구
-- 📦 그룹화
-- ⌨️ 키보드 단축키
-- ↩️ Undo/Redo
+- ⚙️ 실시간 속성 편집 (Phase 7 예정)
+- 📐 정렬 도구 (Phase 8 예정)
+- 📦 그룹화 (Phase 8 예정)
+- ⌨️ 키보드 단축키 (Phase 8 예정)
+- ↩️ Undo/Redo (Phase 8 예정)
 
 #### 🌐 웹사이트 기능 (Phase 9-12)
 - 📄 **다중 페이지 관리**
@@ -176,17 +179,34 @@
 - [x] SVG foreignObject 렌더링
 - [x] 이미지 드래그 이동 지원
 
+**Phase 6: 레이어 시스템** ✅
+- [x] LayerPanel/index.tsx 신규 생성 (레이어 패널)
+- [x] LayerPanel/LayerItem.tsx 신규 생성 (레이어 아이템)
+- [x] LayerPanel/LayerControls.tsx 신규 생성 (레이어 컨트롤)
+- [x] 레이어 목록 표시 (zIndex 순서)
+- [x] 레이어 선택 (단일/다중)
+- [x] 레이어 순서 변경 (위로/아래로 이동)
+- [x] 레이어 표시/숨김 토글
+- [x] 레이어 잠금/해제 토글
+- [x] 레이어 아이콘 및 이름 표시
+- [x] 레이어 삭제
+- [x] builderStore.ts 업데이트 (레이어 관련 액션)
+- [x] Sidebar.tsx 업데이트 (레이어 탭 통합)
+- [x] types/index.ts 업데이트 (레이어 액션 타입)
+
 ### 🚧 다음 단계
 
-**Phase 6: 레이어 시스템** (2일 예상)
-- [ ] LayerPanel/index.tsx 신규 생성
-- [ ] LayerItem.tsx 신규 생성
-- [ ] LayerControls.tsx 신규 생성
-- [ ] 레이어 목록 표시
-- [ ] 레이어 순서 변경 (드래그 앤 드롭)
-- [ ] 레이어 표시/숨김
-- [ ] 레이어 잠금/해제
-- [ ] 레이어 이름 변경
+**Phase 7: 속성 편집 시스템** (2일 예상)
+- [ ] PropertiesPanel/FormGroup.tsx 신규 생성
+- [ ] PropertiesPanel/ShapePropertiesForm.tsx 신규 생성
+- [ ] PropertiesPanel/LinePropertiesForm.tsx 신규 생성
+- [ ] PropertiesPanel/TextPropertiesForm.tsx 신규 생성
+- [ ] PropertiesPanel/ImagePropertiesForm.tsx 신규 생성
+- [ ] 실시간 속성 편집
+- [ ] 색상 피커
+- [ ] 크기 조절 입력
+- [ ] 회전 각도 조절
+- [ ] 다중 선택 시 공통 속성 편집
 
 ---
 
@@ -208,7 +228,7 @@ npx tsc --noEmit
 npm run build
 ```
 
-### Phase 5 기능 테스트
+### Phase 6 기능 테스트
 
 ```bash
 # 1. 개발 서버 시작
@@ -235,13 +255,23 @@ npm run dev
 # - 더블클릭: 기존 텍스트 편집
 # - Enter: 줄바꿈 | ESC: 편집 종료
 
-# 이미지 추가 (Phase 5) ✨ 새로 추가!
+# 이미지 추가 (Phase 5)
 # - 좌측 도구바에서 이미지(I) 클릭
 # - 캔버스 클릭하여 파일 선택 대화상자 열기
 # - 이미지 파일 선택 (jpg, png, gif, webp, svg)
 # - 자동으로 적절한 크기로 조절되어 추가됨
 # - 드래그하여 이동 가능
 # - 선택 박스로 크기 조절 및 회전
+
+# 레이어 관리 (Phase 6) ✨ 새로 추가!
+# - 우측 사이드바에서 "레이어" 탭 클릭
+# - 모든 요소가 zIndex 순서로 표시됨 (높은 것이 위)
+# - 레이어 클릭: 요소 선택
+# - Ctrl/Cmd + 클릭: 다중 선택
+# - 위로/아래로 버튼: 레이어 순서 변경
+# - 눈 아이콘: 표시/숨김 토글
+# - 자물쇠 아이콘: 잠금/해제 토글
+# - 휴지통 버튼: 레이어 삭제
 
 # 선택 및 이동
 # - 선택 모드에서 요소 클릭
@@ -263,15 +293,19 @@ npm run dev
 
 ## 프로젝트 구조
 
-### 현재 구조 (Phase 5 완료)
+### 현재 구조 (Phase 6 완료)
 
 ```
 src/
 ├── components/
 │   ├── Layout.tsx              ✅ 완성
 │   ├── Toolbar.tsx             ✅ 완성
-│   ├── Sidebar.tsx             ✅ 완성
-│   └── PropertiesPanel.tsx     ✅ 완성 (도형/선/텍스트/이미지 속성)
+│   ├── Sidebar.tsx             ✅ 완성 (레이어 탭 통합)
+│   ├── PropertiesPanel.tsx     ✅ 완성 (도형/선/텍스트/이미지 속성)
+│   └── LayerPanel/             ✅ 완성 (Phase 6)
+│       ├── index.tsx           ✅ 완성 (레이어 목록)
+│       ├── LayerItem.tsx       ✅ 완성 (레이어 아이템)
+│       └── LayerControls.tsx   ✅ 완성 (레이어 컨트롤)
 │
 ├── Canvas/
 │   ├── index.tsx               ✅ 완성 (도형+선+텍스트+이미지)
@@ -290,10 +324,10 @@ src/
 │   └── useDragElement.ts       ✅ 완성 (도형+선+텍스트+이미지 드래그)
 │
 ├── store/
-│   └── builderStore.ts         ✅ 완성
+│   └── builderStore.ts         ✅ 완성 (레이어 액션 포함)
 │
 ├── types/
-│   └── index.ts                ✅ 완성 (ImageElement 포함)
+│   └── index.ts                ✅ 완성 (레이어 액션 타입 포함)
 │
 ├── utils/
 │   ├── shapeUtils.ts           ✅ 완성
@@ -319,14 +353,14 @@ src/
 │   │   ├── SelectionBox.tsx           ✅
 │   │   └── TextEditor.tsx             ✅ Phase 4
 │   │
-│   ├── LayerPanel/             🆕 Phase 6
-│   │   ├── index.tsx
-│   │   ├── LayerItem.tsx
-│   │   └── LayerControls.tsx
+│   ├── LayerPanel/             ✅ Phase 6
+│   │   ├── index.tsx           ✅
+│   │   ├── LayerItem.tsx       ✅
+│   │   └── LayerControls.tsx   ✅
 │   │
 │   ├── PropertiesPanel/
 │   │   ├── index.tsx                  ✅ (기본)
-│   │   ├── FormGroup.tsx              
+│   │   ├── FormGroup.tsx              🆕 Phase 7
 │   │   ├── ShapePropertiesForm.tsx    🆕 Phase 7
 │   │   ├── LinePropertiesForm.tsx     🆕 Phase 7
 │   │   ├── TextPropertiesForm.tsx     🆕 Phase 7
@@ -379,11 +413,11 @@ src/
 | **Phase 3** | 선 그리기 | 1일 | 🔴 필수 | ✅ 완료 |
 | **Phase 4** | 자유 텍스트 | 2일 | 🔴 필수 | ✅ 완료 |
 | **Phase 5** | 이미지 추가 | 1일 | 🔴 필수 | ✅ 완료 |
-| **Phase 6** | 레이어 시스템 | 2일 | 🟡 권장 | 📋 대기 |
+| **Phase 6** | 레이어 시스템 | 2일 | 🟡 권장 | ✅ 완료 |
 | **Phase 7** | 속성 편집 | 2일 | 🔴 필수 | 📋 대기 |
 | **Phase 8** | 고급 기능 | 3일 | 🟢 선택 | 📋 대기 |
 
-**현재까지 소요: 8일 / 총 15일**
+**현재까지 소요: 10일 / 총 15일**
 
 #### 🌐 웹사이트 제작 기능 (Phase 9-15)
 
@@ -403,18 +437,18 @@ src/
 
 ### 🎯 마일스톤
 
-#### ✅ MVP v0.5 (이미지 추가) - 현재 위치
+#### ✅ MVP v0.6 (레이어 시스템) - 현재 위치
 ```
-Phase 0 → 1 → 2 → 3 → 4 → 5 완료
-= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 이미지
-= 약 8일 소요
+Phase 0 → 1 → 2 → 3 → 4 → 5 → 6 완료
+= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 이미지 + 레이어
+= 약 10일 소요
 ```
-**기능**: 도형, 선, 텍스트, 이미지를 자유롭게 그리고 편집 가능 ⭐
+**기능**: 도형, 선, 텍스트, 이미지를 자유롭게 그리고 레이어로 관리 가능 ⭐
 
 #### MVP v1.0 (기본 디자인 툴)
 ```
-Phase 0 → 1 → 2 → 3 → 4 → 5 → 7
-= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 이미지 + 속성 편집
+Phase 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7
+= 준비 + 기본 구조 + 도형 + 선 + 텍스트 + 이미지 + 레이어 + 속성 편집
 = 약 12일
 ```
 **기능**: 모든 요소를 속성 패널에서 상세 편집 가능
@@ -605,26 +639,84 @@ Phase 0~15 전체
    → 속성 패널: 정보 확인
 ```
 
-**해결된 이슈**
-- ❌ 문제: 이미지 드래그가 안됨
-- ✅ 해결: foreignObject에 직접 이벤트 핸들러 추가, 내부 요소는 pointerEvents: none 설정 (FreeTextRenderer 패턴 적용)
+---
+
+### Phase 6: 레이어 시스템 ✅ 완료
+
+**목표**: 레이어 패널 및 관리 기능
+
+**완료된 파일**
+1. ✅ src/components/LayerPanel/index.tsx (레이어 패널)
+2. ✅ src/components/LayerPanel/LayerItem.tsx (레이어 아이템)
+3. ✅ src/components/LayerPanel/LayerControls.tsx (레이어 컨트롤)
+4. ✅ src/store/builderStore.ts (레이어 액션 추가)
+5. ✅ src/components/Sidebar.tsx (레이어 탭 통합)
+6. ✅ src/types/index.ts (레이어 액션 타입 추가)
+
+**구현된 기능**
+- ✅ 레이어 목록 표시 (zIndex 순서)
+- ✅ 레이어 아이콘 및 이름 자동 생성
+- ✅ 레이어 클릭으로 요소 선택
+- ✅ 다중 선택 지원 (Ctrl/Cmd + 클릭)
+- ✅ 레이어 순서 변경 (위로/아래로 이동)
+- ✅ zIndex 값 교환으로 순서 관리
+- ✅ 레이어 표시/숨김 토글 (visible 속성)
+- ✅ 레이어 잠금/해제 토글 (locked 속성)
+- ✅ 레이어 삭제 (확인 대화상자)
+- ✅ 레이어 정보 표시 (타입, zIndex 등)
+- ✅ 빈 레이어 상태 UI
+- ✅ 레이어 호버 효과 및 컨트롤 버튼
+
+**작동 방식**
+```
+1. 우측 사이드바에서 "레이어" 탭 클릭
+   → LayerPanel 활성화
+
+2. 레이어 목록
+   → zIndex 순서로 정렬 (높은 것이 위)
+   → 각 요소의 타입별 아이콘 표시
+   → 텍스트는 내용 미리보기 포함
+
+3. 레이어 선택
+   → 클릭: 단일 선택
+   → Ctrl/Cmd + 클릭: 다중 선택/해제
+
+4. 레이어 순서 변경
+   → 위로 버튼: 바로 위 레이어와 zIndex 교환
+   → 아래로 버튼: 바로 아래 레이어와 zIndex 교환
+
+5. 레이어 속성
+   → 눈 아이콘: visible 토글
+   → 자물쇠 아이콘: locked 토글
+   → 휴지통 버튼: 레이어 삭제
+```
+
+**주요 특징**
+- 🎨 타입별 커스텀 아이콘 (도형, 선, 텍스트, 이미지)
+- 📝 텍스트 요소는 내용 일부 미리보기
+- 🔢 zIndex 값 표시
+- 👁️ 숨김 레이어는 반투명 표시
+- 🔒 잠긴 레이어는 편집 불가
+- ⚡ 실시간 업데이트 (Zustand 상태 동기화)
 
 ---
 
-### Phase 6: 레이어 시스템 (다음 단계)
+### Phase 7: 속성 편집 시스템 (다음 단계)
 
-**목표**: 레이어 패널 및 관리 기능
+**목표**: 속성 패널에서 실시간 편집 가능
 
 **작업 파일**
 ```
 신규 생성:
-1. src/components/LayerPanel/index.tsx      (레이어 패널)
-2. src/components/LayerPanel/LayerItem.tsx  (레이어 아이템)
-3. src/components/LayerPanel/LayerControls.tsx (컨트롤)
+1. src/components/PropertiesPanel/FormGroup.tsx
+2. src/components/PropertiesPanel/ShapePropertiesForm.tsx
+3. src/components/PropertiesPanel/LinePropertiesForm.tsx
+4. src/components/PropertiesPanel/TextPropertiesForm.tsx
+5. src/components/PropertiesPanel/ImagePropertiesForm.tsx
 
 수정:
-4. src/components/Layout.tsx                (레이어 패널 추가)
-5. src/store/builderStore.ts                (레이어 관련 액션)
+6. src/components/PropertiesPanel/index.tsx
+7. src/hooks/useResizeElement.ts (신규 생성)
 ```
 
 ---
@@ -729,7 +821,23 @@ npm run dev
 # 3. 콘솔에서 오류 확인 (F12)
 ```
 
-#### Q7: 빌드가 실패해요
+#### Q7: 레이어가 표시되지 않아요
+```bash
+# 1. 우측 사이드바에서 "레이어" 탭 클릭했는지 확인
+# 2. 캔버스에 요소가 추가되어 있는지 확인
+# 3. LayerPanel 컴포넌트가 제대로 import되었는지 확인
+# 4. 콘솔에서 오류 확인 (F12)
+```
+
+#### Q8: 레이어 순서가 변경되지 않아요
+```bash
+# 1. 레이어를 선택했는지 확인
+# 2. 이미 최상위/최하위인지 확인
+# 3. builderStore.ts의 moveLayerUp/Down 함수 확인
+# 4. 콘솔에서 오류 확인 (F12)
+```
+
+#### Q9: 빌드가 실패해요
 ```bash
 # 1. node_modules 삭제 후 재설치
 rm -rf node_modules package-lock.json
@@ -763,7 +871,7 @@ npm run lint
 ## 향후 계획
 
 ### 단기 (1-2개월) - MVP v3.0
-- [ ] Phase 6 완료 (레이어)
+- [x] Phase 6 완료 (레이어) ✅
 - [ ] Phase 7 완료 (속성 편집)
 - [ ] Phase 8 완료 (고급 기능)
 - [ ] Phase 9-11 완료 (페이지 관리, 인터랙션, 반응형)
@@ -825,4 +933,4 @@ MIT License
 
 **Let's build something amazing! 🚀**
 
-*최종 업데이트: 2025년 11월 24일 (Phase 5 완료)*
+*최종 업데이트: 2025년 11월 24일 (Phase 6 완료)*

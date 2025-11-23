@@ -219,6 +219,10 @@ export interface BuilderState {
   deletePage: (id: string) => void;
   setCurrentPage: (id: string) => void;
   updatePageElements: (elements: CanvasElement[]) => void;
+
+  // 레이어 관리 (Phase 6)
+  moveLayerUp: (id: string) => void;
+  moveLayerDown: (id: string) => void;
 }
 
 // ============================================

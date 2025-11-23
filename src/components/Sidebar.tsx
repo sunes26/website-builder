@@ -1,13 +1,14 @@
 import { Layers, Settings } from 'lucide-react';
 import { useState } from 'react';
 import PropertiesPanel from './PropertiesPanel';
+import LayerPanel from './LayerPanel';
 import { useBuilderStore } from '../store/builderStore';
 
 type SidebarTab = 'properties' | 'layers';
 
 export default function Sidebar() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('properties');
-  const { selectedElementIds } = useBuilderStore();
+  const { selectedElementIds, elements } = useBuilderStore();
 
   return (
     <aside className="w-80 bg-white border-l border-gray-200 flex flex-col">
@@ -69,37 +70,28 @@ export default function Sidebar() {
           </div>
         )}
         
-        {activeTab === 'layers' && (
-          <div className="p-4">
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <Layers size={24} className="text-gray-400" />
-              </div>
-              <p className="text-gray-500 text-sm">
-                레이어가 없습니다
-              </p>
-              <p className="text-gray-400 text-xs mt-2">
-                요소를 추가하면 여기에 표시됩니다<br />
-                (Phase 6에서 구현 예정)
-              </p>
-            </div>
-          </div>
-        )}
+        {activeTab === 'layers' && <LayerPanel />}
       </div>
 
       {/* 푸터 정보 */}
       <div className="border-t border-gray-200 px-4 py-3 bg-gray-50">
         <div className="text-xs text-gray-500 space-y-1">
           <div className="flex justify-between">
-            <span>선택된 요소:</span>
+            <span>총 요소:</span>
             <span className="font-medium text-gray-700">
+              {elements.length}개
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span>선택됨:</span>
+            <span className="font-medium text-blue-600">
               {selectedElementIds.length}개
             </span>
           </div>
           <div className="flex justify-between">
             <span>Phase:</span>
-            <span className="font-medium text-blue-600">
-              1 (기본 구조)
+            <span className="font-medium text-green-600">
+              6 (레이어 시스템)
             </span>
           </div>
         </div>
